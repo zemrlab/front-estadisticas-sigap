@@ -7,12 +7,16 @@ class Fecha extends Component{
     constructor(props){
         super(props);
         this.state = {
-            dateFormat : "DD/MM/YYYY"
+            dateFormat : "DD/MM/YYYY",
+            className : "form-control"
         };
     }
 
     render(){
-        return <DatePicker selected={moment.unix(this.props.startDate)} onChange={this.props.handleChange} dateFormat={this.state.dateFormat}/>
+        return (
+            <DatePicker selected={moment.unix(this.props.startDate)} onChange={this.props.handleChange} dateFormat={this.state.dateFormat} className={this.state.className}/>
+        )
+
     }
 }
 

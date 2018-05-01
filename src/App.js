@@ -12,8 +12,8 @@ class App extends Component {
             isLoaded: false,
             infoType : "monto",
             titulo: 'Monto acumulado por concepto',
-            fechaInicio : '1420329600',
-            fechaFin : '1420588800',
+            fechaInicio: '1420243200',
+            fechaFin: '1420502400',
             grafico : '1',
             anio : '2015',
             opcion : 'fecha'
@@ -29,12 +29,14 @@ class App extends Component {
         this.setState({
             fechaInicio : date.unix()
         });
+        console.log(this.state.fechaInicio);
     }
 
     handleChangeFechaFin(date){
         this.setState({
             fechaFin : date.unix()
         });
+        console.log(this.state.fechaInicio);
     }
 
     handleChangeGrafico(event) {

@@ -14,7 +14,7 @@ class Fecha extends Component{
 
     render(){
         return (
-            <DatePicker selected={moment.unix(this.props.startDate)} onChange={this.props.handleChange} dateFormat={this.state.dateFormat} className={this.state.className}/>
+            <DatePicker selected={moment.unix(this.props.startDate).utc()} onChange={this.props.handleChange} dateFormat={this.state.dateFormat} className={this.state.className}/>
         )
 
     }

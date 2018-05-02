@@ -8,6 +8,10 @@
     padding-bottom: 50px;
 }
 
+.tablero{
+    text-align: center;
+}
+
 .fecha{
     margin: 20px 0;
 }

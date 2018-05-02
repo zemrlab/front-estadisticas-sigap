@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import './App.css';
 import Chart from './componentes/chart.js'
 import Fecha from './componentes/fecha.js'
+import BtnExport from './componentes/btn-export';
+import Tabla from './componentes/tabla';
 
 class App extends Component {
 
@@ -9,7 +11,9 @@ class App extends Component {
         super();
         this.state = {
             chartData : {},
-            isLoaded: false,
+            isChartLoaded: false,
+            tableData: {},
+            isTableLoaded: false,
             infoType : "monto",
             titulo: 'Monto acumulado por concepto',
             fechaInicio: '1420243200',
@@ -52,56 +56,58 @@ class App extends Component {
     }
 
     componentDidMount(){
-        var url = 'https://back-estadisticas.herokuapp.com/apiController/importe?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin;
-        this.getChartData(encodeURI(url));
+        var urlChart = 'https://back-estadisticas.herokuapp.com/apiController/importe?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin;
+        var urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaFechas/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin;
+        this.getChartData(encodeURI(urlChart));
+        this.getTableData(encodeURI(urlTable));
     }
 
     onChangeTipoMounted(){
-        var url = '';
+        var urlChart = '';
         if(this.state.opcion === 'fecha'){
             if(this.state.infoType === "monto"){
-                url = 'https://back-estadisticas.herokuapp.com/apiController/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin;
+                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin;
                 this.setState({
-                    isLoaded : false,
+                    isChartLoaded : false,
                     infoType : "importes",
                     titulo : "Importes por concepto"
                 });
-                this.getChartData(encodeURI(url));
+                this.getChartData(encodeURI(urlChart));
             }
             else{
-                url = 'https://back-estadisticas.herokuapp.com/apiController/importe?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin;
+                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/importe?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin;
                 this.setState({
-                    isLoaded : false,
+                    isChartLoaded : false,
                     infoType : "monto",
                     titulo : "Monto acumulado por concepto"
                 });
-                this.getChartData(encodeURI(url));
+                this.getChartData(encodeURI(urlChart));
             }
         }
         else{
             if(this.state.infoType === "monto"){
-                url = 'https://back-estadisticas.herokuapp.com/apiController/devolverAnioCantidad?year='+this.state.anio;
+                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/devolverAnioCantidad?year='+this.state.anio;
                 this.setState({
-                    isLoaded : false,
+                    isChartLoaded : false,
                     infoType : "importes",
                     titulo : "Importes durante el año"
                 });
-                this.getChartData(encodeURI(url));
+                this.getChartData(encodeURI(urlChart));
             }
             else{
-                url = 'https://back-estadisticas.herokuapp.com/apiController/devolverAnioImporte/?year='+this.state.anio;
+                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/devolverAnioImporte/?year='+this.state.anio;
                 this.setState({
-                    isLoaded : false,
+                    isChartLoaded : false,
                     infoType : "monto",
                     titulo : "Montos durante el año"
                 });
-                this.getChartData(encodeURI(url));
+                this.getChartData(encodeURI(urlChart));
             }
         }
     }
 
-    getChartData(url = 'https://back-estadisticas.herokuapp.com/apiController/importe'){
-        fetch(url)
+    getChartData(urlChart){
+        fetch(urlChart)
         .then((response)=>{
             return response.json();
         })
@@ -109,9 +115,22 @@ class App extends Component {
             result['datasets'][0]['backgroundColor'] = 'rgba(54, 162, 235, 0.6)';
             this.setState({
                 chartData : result,
-                isLoaded : true,
+                isChartLoaded : true,
             });
         })
+    }
+
+    getTableData(urlTable) {
+        fetch(urlTable)
+            .then((response) => {
+                return response.json();
+            })
+            .then((result) => {
+                this.setState({
+                    tableData: result,
+                    isTableLoaded: true,
+                });
+            })
     }
 
     onClickPreventDefault(e) {
@@ -120,18 +139,21 @@ class App extends Component {
 
     submitDatesFunction(){
         this.setState({
-            isLoaded : false,
+            isChartLoaded : false,
+            isTableLoaded : false,
             infoType : "monto"
         });
         this.getChartData('https://back-estadisticas.herokuapp.com/apiController/importe/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin);
+        this.getTableData('https://back-estadisticas.herokuapp.com/ApiController/tablaFechas/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin);
     }
 
     submitYearFunction(){
         this.setState({
-            isLoaded : false,
+            isChartLoaded : false,
             infoType : "monto"
         });
         this.getChartData('https://back-estadisticas.herokuapp.com/apiController/devolverAnioImporte/?year='+this.state.anio);
+        this.getTableData('https://back-estadisticas.herokuapp.com/ApiController/tablaAnio/?year='+this.state.anio);
     }
 
     render() {
@@ -208,9 +230,16 @@ class App extends Component {
                                         <button className="btn btn-default" onClick={this.onChangeTipoMounted.bind(this)}>Monto/Importes</button>
                                     </div>
                                 </div>
+                                <hr></hr>
+                                <div className="row">
+                                    <div className="col-md-12">
+                                        <BtnExport/>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="tablero col-md-10">
-                                {this.state.isLoaded ? <Chart chartData={this.state.chartData} grafico={this.state.grafico}  legendPosition="bottom" textTitle={this.state.titulo}/> : <div>Esperando recurso...</div>}
+                            <div className="tablero col-md-10" id="estadisticas">
+                                {this.state.isChartLoaded ? <Chart chartData={this.state.chartData} grafico={this.state.grafico}  legendPosition="bottom" textTitle={this.state.titulo}/> : <div>Esperando recurso...</div>}
+                                {this.state.isTableLoaded ? <Tabla tableData={this.state.tableData} /> : <div>Esperando recurso...</div>}
                             </div>
                         </div>
                     </div>

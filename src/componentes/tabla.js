@@ -12,7 +12,7 @@ class Tabla extends Component {
 
     render(){
         return(
-            <BootstrapTable data={this.state.tableData} height='300' options={{ noDataText: 'No hay informacion para mostar' }} scrollTop={'Top'}>
+            <BootstrapTable data={this.state.tableData} pagination options={{ noDataText: 'No hay informacion para mostar' }}>
                 <TableHeaderColumn width="150" dataField='concepto' isKey>Concepto</TableHeaderColumn>
                 <TableHeaderColumn width="150" dataField='importe'>Importe</TableHeaderColumn>
                 <TableHeaderColumn width="150" dataField='codigoalumno'>Codigo</TableHeaderColumn>

@@ -1,14 +1,52 @@
 import React, {Component} from 'react';
-import {Bar, Line, Pie, Doughnut, Radar} from 'react-chartjs-2';
+import FusionCharts from 'fusioncharts';
+import Charts from 'fusioncharts/fusioncharts.charts';
+import OceanTheme from 'fusioncharts/themes/fusioncharts.theme.ocean';
+import ReactFC from 'react-fusioncharts';
+
+Charts(FusionCharts);
+OceanTheme(FusionCharts);
+
+
 
 class Chart extends Component{
     constructor(props){
         super(props);
         this.state = {
-            "chartData" : props.chartData,
-            "grafico" : props.grafico
+            chartData : props.chartData,
+            type : props.grafico,
+            width: 1200,
+            height: 700,
+            dataFormat: 'json',
+            dataSource: {
+                chart: {
+                    "formatNumberScale" : "0",
+                    "palettecolors": props.paleta,
+                    "baseFont": "Arial",
+                    "baseFontSize": "16",
+                    caption: props.titulo,
+                    subcaption : "      ",
+                    captionFontSize: "24",
+                    numberPrefix: 'S/ ',
+                    theme: 'ocean',
+                    "exportEnabled": "1",
+                    "usePlotGradientColor": props.grad,
+                    "plotGradientColor":"#ffffff"
+                },
+                data:
+                    props.chartData,
+
+            },
         };
+        this.handleChangeTipo = this.handleChangeTipo.bind(this);
     }
+
+    handleChangeTipo(tipo){
+        this.setState({
+            type : tipo
+        });
+    }
+
 
     static defaultProps = {
         displayTitle : true,
@@ -17,101 +55,14 @@ class Chart extends Component{
         legendPosition : 'right'
     }
 
+
+
     render(){
-        const graf = this.state.grafico;
         return (
-            <div className="chart">
-                {graf === '1' ? (
-                    <div className="verBar">
-                        <Bar
-                            data={this.state.chartData}
-                            options={{
-                                title : {
-                                    display : this.props.displayTitle,
-                                    text : this.props.textTitle,
-                                    fontSize : 25
-                                },
-                                legend :{
-                                    display : this.props.displayLegend,
-                                    position : this.props.legendPosition
-                                }
-                            }}
-                        />
-                    </div>
-                ) :(null)}
-                {graf === '2' ? (
-                    <div className="verBar">
-                        <Pie
-                            data={this.state.chartData}
-                            options={{
-                                title : {
-                                    display : this.props.displayTitle,
-                                    text : this.props.textTitle,
-                                    fontSize : 25
-                                },
-                                legend :{
-                                    display : this.props.displayLegend,
-                                    position : this.props.legendPosition
-                                }
-                            }}
-                        />
-                    </div>
-                ) :(null)}
-                {graf === '3' ? (
-                    <div className="verBar">
-                        <Line
-                            data={this.state.chartData}
-                            options={{
-                                title : {
-                                    display : this.props.displayTitle,
-                                    text : this.props.textTitle,
-                                    fontSize : 25
-                                },
-                                legend :{
-                                    display : this.props.displayLegend,
-                                    position : this.props.legendPosition
-                                }
-                            }}
-                        />
-                    </div>
-                ) :(null)}
-                {graf === '4' ? (
-                    <div className="verBar">
-                        <Doughnut
-                            data={this.state.chartData}
-                            options={{
-                                title : {
-                                    display : this.props.displayTitle,
-                                    text : this.props.textTitle,
-                                    fontSize : 25
-                                },
-                                legend :{
-                                    display : this.props.displayLegend,
-                                    position : this.props.legendPosition
-                                }
-                            }}
-                        />
-                    </div>
-                ) :(null)}
-                {graf === '5' ? (
-                    <div className="verBar">
-                        <Radar
-                            data={this.state.chartData}
-                            options={{
-                                title : {
-                                    display : this.props.displayTitle,
-                                    text : this.props.textTitle,
-                                    fontSize : 25
-                                },
-                                legend :{
-                                    display : this.props.displayLegend,
-                                    position : this.props.legendPosition
-                                }
-                            }}
-                        />
-                    </div>
-                ) :(null)}
-            </div>
+          <div>
+          <ReactFC {...this.state} />
+
+        </div>
         )
     }
 }

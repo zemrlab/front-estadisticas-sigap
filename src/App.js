@@ -331,7 +331,7 @@ class App extends Component {
                                 <hr></hr>
                                 <div className="row">
                                     <div className="col-md-12">
-                                        <BtnExport/>
+                                        {this.state.isTableLoaded ? (<BtnExport tableData={this.state.tableData}/>) : (console.log())}
                                     </div>
                                 </div>
                             </div>

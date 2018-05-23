@@ -15,15 +15,18 @@ class App extends Component {
             isChartLoaded: false,
             tableData: {},
             isTableLoaded: false,
-            infoType : "monto",
-            titulo: 'MONTO ACUMULADO POR CONCEPTO DEL 03/01/2015 AL 06/01/2015',
+            infoType : "importes",
+            titulo: 'REPORTE ESTADISTICO DE IMPORTES POR CONCEPTO',
+            subtitulo: 'DEL 03/01/2015 AL 06/01/2015',
             fechaInicio: '1420243200',
             fechaFin: '1420502400',
             grafico : 'column2d',
             anio : '2015',
             opcion : 'fecha',
             colores : "",
-            grad : "1"
+            grad : "0",
+            prefijo : "S/",
+            listaConceptos : ""
         };
         this.handleChangeFechaInicio = this.handleChangeFechaInicio.bind(this);
         this.handleChangeFechaFin = this.handleChangeFechaFin.bind(this);
@@ -32,6 +35,9 @@ class App extends Component {
         this.handleChangeAnio = this.handleChangeAnio.bind(this);
         this.handleChangeOpcion = this.handleChangeOpcion.bind(this);
         this.handleChangeColores = this.handleChangeColores.bind(this);
+        this.handleChangeInfoType = this.handleChangeInfoType.bind(this);
+        this.handleChangePrefijo = this.handleChangePrefijo.bind(this);
+        this.handleChangeListaConceptos = this.handleChangeListaConceptos.bind(this);
     }
 
     handleChangeFechaInicio(date){
@@ -49,23 +55,69 @@ class App extends Component {
     }
 
     handleChangeGrafico(event) {
-        this.setState({grafico: event.target.value});
+        this.setState({
+            grafico: event.target.value
+        });
+        console.log(this.state.grafico);
     }
 
     handleChangeGrad(event) {
-        this.setState({grad: event.target.value});
+        this.setState({
+            grad: event.target.value
+        });
+        console.log(this.state.grad);
     }
 
     handleChangeAnio(event) {
-        this.setState({anio: event.target.value});
+        this.setState({
+            anio: event.target.value
+        });
+        console.log(this.state.anio);
     }
 
     handleChangeOpcion(event) {
-        this.setState({opcion: event.target.value});
+        this.setState({
+            opcion: event.target.value
+        });
+        console.log(this.state.opcion);
     }
 
     handleChangeColores(event) {
-        this.setState({colores: event.target.value});
+        this.setState({
+            colores: event.target.value
+        });
+        console.log(this.state.colores);
+    }
+
+    handleChangeInfoType(event){
+        if(this.state.infoType === "operaciones"){
+            this.setState({
+                prefijo : "S/"
+            })
+        }else{
+            this.setState({
+                prefijo : ""
+            })
+        }
+        this.setState({
+            infoType : event.target.value
+        });
+        console.log(this.state.infoType);
+        console.log(this.state.prefijo);
+    }
+
+    handleChangePrefijo(event){
+        this.setState({
+            infoType : event.target.value
+        });
+        console.log(this.state.prefijo);
+    }
+
+    handleChangeListaConceptos(event){
+        this.setState({
+            listaConceptos : event.target.value
+        });
+        console.log(this.state.listaConceptos);
     }
 
     componentDidMount(){
@@ -75,17 +127,17 @@ class App extends Component {
         this.getTableData(encodeURI(urlTable));
     }
 
-    onChangeTipoMounted(){
+    generarGrafica(){
         var urlChart = '';
         if(this.state.opcion === 'fecha'){
-            if(this.state.infoType === "monto"){
+            if(this.state.infoType === "operaciones"){
                 urlChart = 'https://back-estadisticas.herokuapp.com/apiController/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin;
                 var fi = new Date(this.state.fechaInicio*1000);
                 var ff = new Date(this.state.fechaFin*1000);
                 this.setState({
                     isChartLoaded : false,
-                    infoType : "importes",
-                    titulo : ("IMPORTES POR CONCEPTO DEL "+
+                    titulo: 'REPORTE ESTADISTICO DE NUMERO DE OPERACIONES POR CONCEPTO',
+                    subtitulo : ("DEL "+
                     (fi.getUTCDate()<=9 ? ("0"+fi.getUTCDate()) : (fi.getUTCDate()))
                     +"/"+(fi.getUTCDate()<=8 ? ("0"+(fi.getUTCMonth()+1)) : (fi.getUTCMonth()+1))
                     +"/"+fi.getUTCFullYear()
@@ -102,8 +154,8 @@ class App extends Component {
                 ff = new Date(this.state.fechaFin*1000);
                 this.setState({
                     isChartLoaded : false,
-                    infoType : "monto",
-                    titulo : ("MONTO ACUMULADO POR CONCEPTO DEL "+
+                    titulo: 'REPORTE ESTADISTICO DE NUMERO DE IMPORTES POR CONCEPTO',
+                    subtitulo : ("DEL "+
                     (fi.getUTCDate()<=9 ? ("0"+fi.getUTCDate()) : (fi.getUTCDate()))
                     +"/"+(fi.getUTCDate()<=8 ? ("0"+(fi.getUTCMonth()+1)) : (fi.getUTCMonth()+1))
                     +"/"+fi.getUTCFullYear()
@@ -116,12 +168,12 @@ class App extends Component {
             }
         }
         else{
-            if(this.state.infoType === "monto"){
+            if(this.state.infoType === "operaciones"){
                 urlChart = 'https://back-estadisticas.herokuapp.com/apiController/devolverAnioCantidad?year='+this.state.anio;
                 this.setState({
                     isChartLoaded : false,
-                    infoType : "importes",
-                    titulo : ("IMPORTES DURANTE EL AÑO " + this.state.anio)
+                    titulo: 'REPORTE ESTADISTICO DE NUMERO DE OPERACIONES POR CONCEPTO',
+                    subtitulo : ("DURANTE EL AÑO " + this.state.anio)
                 });
                 this.getChartData(encodeURI(urlChart));
             }
@@ -129,8 +181,8 @@ class App extends Component {
                 urlChart = 'https://back-estadisticas.herokuapp.com/apiController/devolverAnioImporte/?year='+this.state.anio;
                 this.setState({
                     isChartLoaded : false,
-                    infoType : "monto",
-                    titulo : ("MONTOS DURANTE EL AÑO " + this.state.anio)
+                    titulo: 'REPORTE ESTADISTICO DE IMPORTES POR CONCEPTO',
+                    subtitulo : ("DURANTE EL AÑO " + this.state.anio)
                 });
                 this.getChartData(encodeURI(urlChart));
             }
@@ -181,14 +233,14 @@ class App extends Component {
         e.preventDefault();
     }
 
+
     submitDatesFunction(){
         var fi = new Date(this.state.fechaInicio*1000);
         var ff = new Date(this.state.fechaFin*1000);
         this.setState({
             isChartLoaded : false,
             isTableLoaded : false,
-            infoType : "monto",
-            titulo : ("MONTO ACUMULADO POR CONCEPTO DEL "+
+            titulo : ("IMPORTES POR CONCEPTO DEL "+
             (fi.getUTCDate()<=9 ? ("0"+fi.getUTCDate()) : (fi.getUTCDate()))
             +"/"+(fi.getUTCDate()<=8 ? ("0"+(fi.getUTCMonth()+1)) : (fi.getUTCMonth()+1))
             +"/"+fi.getUTCFullYear()
@@ -205,8 +257,7 @@ class App extends Component {
         this.setState({
             isChartLoaded : false,
             isTableLoaded : false,
-            infoType : "monto",
-            titulo : ("MONTOS DURANTE EL AÑO " + this.state.anio)
+            titulo : ("IMPORTES DURANTE EL AÑO " + this.state.anio)
         });
         this.getChartData('https://back-estadisticas.herokuapp.com/apiController/devolverAnioImporte/?year='+this.state.anio);
         this.getTableData('https://back-estadisticas.herokuapp.com/ApiController/tablaYear/?year='+this.state.anio);
@@ -275,7 +326,14 @@ class App extends Component {
                                                 </select>
                                             </div>
                                             <div className="form-group">
-                                                <button type="submit"  onClick={this.submitDatesFunction.bind(this)} className="btn btn-primary">Generar</button>
+                                                <label>Tipo de vista:</label>
+                                                <select className="form-control" value={this.state.infoType} onChange={this.handleChangeInfoType}>
+                                                    <option value="importes">Importes</option>
+                                                    <option value="operaciones">Numero de operaciones</option>
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <button type="submit"  onClick={this.generarGrafica.bind(this)} className="btn btn-primary">Generar grafica</button>
                                             </div>
                                         </div>
                                     ):(null)}
@@ -285,6 +343,10 @@ class App extends Component {
                                             <div className="form-group">
                                                 <label>Año a buscar:</label>
                                                 <input type="text" className="form-control" value={this.state.anio} onChange={this.handleChangeAnio} />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Conceptos a buscar:</label>
+                                                <input type="text" className="form-control" value={this.state.listaConceptos} onChange={this.handleChangeListaConceptos} />
                                             </div>
                                             <div className="form-group">
                                                 <label>Tipo de grafica:</label>
@@ -318,16 +380,18 @@ class App extends Component {
                                                 </select>
                                             </div>
                                             <div className="form-group">
-                                                <button type="submit" onClick={this.submitYearFunction.bind(this)} className="btn btn-primary">Generar</button>
+                                                <label>Tipo de vista:</label>
+                                                <select className="form-control" value={this.state.infoType} onChange={this.handleChangeInfoType}>
+                                                    <option value="importes">Importes</option>
+                                                    <option value="operaciones">Numero de operaciones</option>
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <button type="submit" onClick={this.generarGrafica.bind(this)} className="btn btn-primary">Generar grafica</button>
                                             </div>
                                         </div>
                                     ) : (null)}
                                 </form>
-                                <div className="row">
-                                    <div className="col-md-12">
-                                        <button className="btn btn-default" onClick={this.onChangeTipoMounted.bind(this)}>Monto/Importes</button>
-                                    </div>
-                                </div>
                                 <hr></hr>
                                 <div className="row">
                                     <div className="col-md-12">
@@ -336,7 +400,7 @@ class App extends Component {
                                 </div>
                             </div>
                             <div className="tablero col-md-10" id="estadisticas">
-                                <Tabs onSelect={(index, label) => console.log(label + ' selected')}>
+                                <Tabs align="center" onSelect={(index, label) => console.log(label + ' selected')}>
                                     <Tab label="Gráfica">
                                         {this.state.isChartLoaded ?
                                             (<Chart
@@ -345,7 +409,9 @@ class App extends Component {
                                                 legendPosition="bottom"
                                                 titulo={this.state.titulo}
                                                 paleta={this.state.colores}
-                                                grad={this.state.grad}/>)
+                                                grad={this.state.grad}
+                                                prefijo={this.state.prefijo}
+                                                subtitulo={this.state.subtitulo}/>)
                                             :(<div className="App-logo"><br></br><br></br><br></br><br></br>
                                                                         <br></br><br></br><br></br><br></br>
                                                                         <br></br><br></br><br></br><br></br>

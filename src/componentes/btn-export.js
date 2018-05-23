@@ -27,7 +27,7 @@ class BtnExport extends Component{
     render() {
         return (<div>
             <div className="mb5">
-                <button className="btn btn-primary" onClick={this.printDocument}>Print</button>
+                <button className="btn btn-primary" onClick={this.printDocument}>Imprimir</button>
             </div>
         </div>);
     }

@@ -108,7 +108,7 @@ class BtnExport extends Component{
             doc.text(110,200,"Ciudad Universitaria, "+Fecha);
 
             setTimeout(function(){
-                doc.output('save', 'g.pdf');
+                doc.output('save', 'ReporteGrafica.pdf');
             },1000);
 
             var docTabla= Format();

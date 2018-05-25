@@ -7,7 +7,9 @@ class BtnExport extends Component{
     constructor(props){
         super(props);
         this.state = {
-            tableData: props.tableData
+            tableData: props.tableData,
+            tableTitle: props.tableTitle,
+            tableSubtitle: props.tableSubtitle
         };
         this.printDocument = this.printDocument.bind(this);
     }
@@ -48,7 +50,7 @@ class BtnExport extends Component{
                 }
                 if (Hora == 0)
                     Hora = 12
-               
+
                 if (Hora <= 9) Hora = "0" + Hora
                 if (Minutos <= 9) Minutos = "0" + Minutos
                 if (Segundos <= 9) Segundos = "0" + Segundos
@@ -70,14 +72,14 @@ class BtnExport extends Component{
                 doc.text(170,22,marcHora);
 
                 pie(doc,nombreSistema,version);
-                
+
 
 
                 return doc;
             }
 
-        var pdf = function (graf, columns, rows) {
-       
+        var pdf = function (graf, columns, rows, titulo) {
+
             var nombreSistema = "SIGAP";
             var version = "1.0";
             var doc=Format();
@@ -108,7 +110,7 @@ class BtnExport extends Component{
             setTimeout(function(){
                 doc.output('save', 'g.pdf');
             },1000);
-            
+
             var docTabla= Format();
             var centeredText = function (text, y) {
                 var textWidth = docTabla.getStringUnitWidth(text) * docTabla.internal.getFontSize() / docTabla.internal.scaleFactor;
@@ -117,8 +119,8 @@ class BtnExport extends Component{
             }
             docTabla.setFontStyle("arial","bold");
             docTabla.setFontSize(12);
-            centeredText("'INSERTE TITULO AQUI'",40);
-               
+            centeredText(titulo,40);
+
                 docTabla.autoTable(columns, rows, {
                     margin: { top: 45 },
                     addPageContent: function (data) {
@@ -128,8 +130,8 @@ class BtnExport extends Component{
                 });
 
                 docTabla.output('save', 'ReporteTabla.pdf');//guardar pdf
-          
-            
+
+
         }
 
         var data = this.state.tableData;
@@ -149,7 +151,7 @@ class BtnExport extends Component{
 
         var columns = ["Concepto", "Importe", "Codigo-Alumno", "Alumno", "Fecha"];
 
-        pdf('grafEst', columns, rows);
+        pdf('grafEst', columns, rows, this.state.tableTitle);
     }
 
     render() {

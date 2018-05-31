@@ -157,7 +157,7 @@ class BtnExport extends Component{
     render() {
         return (<div>
             <div className="mb5">
-                <button className="btn btn-primary" onClick={this.printDocument}>Imprimir</button>
+                <button className="btn btn-warning btn-block" onClick={this.printDocument}>Imprimir</button>
             </div>
         </div>);
     }

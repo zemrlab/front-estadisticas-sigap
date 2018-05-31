@@ -16,7 +16,7 @@ class Chart extends Component{
             chartData : props.chartData,
             type : props.grafico,
             width: '100%',
-            height: '100%',
+            height: '90%',
             dataFormat: 'json',
             dataSource: {
                 chart: {

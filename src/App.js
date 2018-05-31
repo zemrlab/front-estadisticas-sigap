@@ -5,23 +5,34 @@ import Fecha from './componentes/fecha.js'
 import BtnExport from './componentes/btn-export';
 import Tabla from './componentes/tabla';
 import {Tabs, Tab} from 'react-bootstrap-tabs';
+import ToolTipPosition from "./componentes/ToolTipPositions";
+import Warper from "./componentes/Warper";
 
 class App extends Component {
 
     constructor(){
         super();
         this.state = {
+            showPopover: false,
+            verdades : {},
             chartData : {},
             isChartLoaded: false,
             tableData: {},
             isTableLoaded: false,
+            conceptsData: {},
+            isConceptsLoaded: false,
             infoType : "importes",
             titulo: 'REPORTE ESTADISTICO DE IMPORTES POR CONCEPTO',
             subtitulo: 'DEL 03/01/2015 AL 06/01/2015',
             fechaInicio: '1420243200',
             fechaFin: '1420502400',
             grafico : 'column2d',
-            anio : '2015',
+            anioini : '2015',
+            aniofin : '2015',
+            mesini : '',
+            mesfin : '',
+            diaini : '',
+            diafin : '',
             opcion : 'fecha',
             colores : "",
             grad : "0",
@@ -38,6 +49,21 @@ class App extends Component {
         this.handleChangeInfoType = this.handleChangeInfoType.bind(this);
         this.handleChangePrefijo = this.handleChangePrefijo.bind(this);
         this.handleChangeListaConceptos = this.handleChangeListaConceptos.bind(this);
+        this.handleChangeIndexTab = this.handleChangeIndexTab.bind(this);
+    }
+
+    cambioVerdades(n){
+        var verdaux = [];
+        for(var i in this.state.verdades){
+            if(i===n){verdaux.push("true")}
+            if(i!==n){verdaux.push("false")}
+        }
+    }
+
+    handleChangeIndexTab(index){
+        this.setState({
+            indextab : index
+        });
     }
 
     handleChangeFechaInicio(date){
@@ -123,8 +149,11 @@ class App extends Component {
     componentDidMount(){
         var urlChart = 'https://back-estadisticas.herokuapp.com/apiController/importe?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin;
         var urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaFechas/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin;
+
+        this.getConceptsData(encodeURI(urlChart));
         this.getChartData(encodeURI(urlChart));
         this.getTableData(encodeURI(urlTable));
+
     }
 
     generarGrafica(){
@@ -187,6 +216,7 @@ class App extends Component {
                 this.getChartData(encodeURI(urlChart));
             }
         }
+        this.getConceptsData(encodeURI(urlChart));
     }
 
     getChartData(urlChart){
@@ -197,7 +227,7 @@ class App extends Component {
         .then((result)=>{
             result['datasets'][0]['backgroundColor'] = 'rgba(54, 162, 235, 0.6)';
 
-            var chartData1=[];
+            const chartData1=[];
 
             for(var i in result.labels)
             {
@@ -206,13 +236,56 @@ class App extends Component {
                 value: result['datasets'][0]['data'][i]
               });
             }
-            console.log(chartData1);
 
             this.setState({
                 chartData : chartData1 ,
                 isChartLoaded : true,
 
             });
+        })
+    }
+
+    crearInputsCheckers(){
+        const objs = [];
+        console.log(this.state.conceptsData);
+        console.log(this.state.verdades);
+        for(var i in this.state.conceptsData){
+            objs.push(
+                <div key={i}>
+                    <label>{this.state.conceptsData[i]["label"]}</label>
+                    <input
+                        type="checkbox"
+                        onChange={this.cambioVerdades(i)}
+                        defaultChecked={this.state.verdades[i]["value"]}
+                    />
+                </div>
+            )
+        }
+        return objs;
+    }
+
+
+    getConceptsData(urlConcepts){
+        fetch(urlConcepts)
+        .then((response)=>{
+            return response.json();
+        })
+        .then((result)=>{
+
+            var conceptsData1=[];
+            var verdaux1=[];
+
+            for(var i in result.labels)
+            {
+                conceptsData1.push({label: result['labels'][i]});
+                verdaux1.push({value : true});
+            }
+            this.setState({
+                conceptsData : conceptsData1,
+                verdades : verdaux1,
+                isConceptsLoaded : true,
+            });
+
         })
     }
 
@@ -257,7 +330,7 @@ class App extends Component {
         this.setState({
             isChartLoaded : false,
             isTableLoaded : false,
-            titulo : ("IMPORTES DURANTE EL AÑO " + this.state.anio)
+            titulo : ("IMPORTES DE LOS MESES DEL AÑO " + this.state.anio)
         });
         this.getChartData('https://back-estadisticas.herokuapp.com/apiController/devolverAnioImporte/?year='+this.state.anio);
         this.getTableData('https://back-estadisticas.herokuapp.com/ApiController/tablaYear/?year='+this.state.anio);
@@ -267,173 +340,165 @@ class App extends Component {
 
         const op = this.state.opcion;
         return (
+            <div style={{
+                position: 'relative'
+            }}>
             <div className="App">
                 <section>
                     <div className="container-fluid">
                         <div className="row">
                             <div className="panel col-md-2">
+                                <Tabs align="center" defaultActiveKey={this.state.indextab} onSelect={(index, label) => console.log(label + ' selected')}>
+                                    <Tab label="OpcDatos">
+                                        <div className="example-warper">
+                                        <form className="opciones-formulario" onSubmit={this.onClickPreventDefault}>
+                                            <div className="form-group">
+                                                {this.state.isConceptsLoaded ?
+                                                    (<ToolTipPosition />) : (<button className="btn btn-info btn-block" disabled>Escoger conceptos</button>)}
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Filtro:</label>
+                                                <select className="form-control" value={this.state.opcion} onChange={this.handleChangeOpcion}>
+                                                    <option value="fecha">DE FECHA A FECHA</option>
+                                                    <option value="months">POR MESES DEL AÑO</option>
+                                                    <option value="years">DE AÑO A AÑO</option>
+                                                </select>
+                                            </div>
+                                            <hr></hr>
+                                            {op === 'fecha' ? (
+                                                <div>
+                                                    <div className="form-group">
+                                                        <label>Fecha inicial:</label>
+                                                        <Fecha startDate={this.state.fechaInicio} handleChange={this.handleChangeFechaInicio}/>
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <label>Fecha final:</label>
+                                                        <Fecha startDate={this.state.fechaFin} handleChange={this.handleChangeFechaFin}/>
+                                                    </div>
+                                                </div>
+                                            ):(null)}
+
+                                            {op === 'months' ? (
+                                                <div>
+                                                    <div className="form-group">
+                                                        <label>Año a buscar:</label>
+                                                        <input type="text" className="form-control" value={this.state.anio} onChange={this.handleChangeAnio} />
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <label>Conceptos a buscar:</label>
+                                                        <input type="text" className="form-control" value={this.state.listaConceptos} onChange={this.handleChangeListaConceptos} />
+                                                    </div>
+                                                </div>
+                                            ) : (null)}
+
+                                            {op === 'years' ? (
+                                                <div>
+                                                    <div className="form-group">
+                                                        <label>Año inicial:</label>
+                                                        <input type="text" className="form-control" value={this.state.anio} onChange={this.handleChangeAnio} />
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <label>Año final:</label>
+                                                        <input type="text" className="form-control" value={this.state.anio} onChange={this.handleChangeAnio} />
+                                                    </div>
+                                                </div>
+                                            ) : (null)}
+                                            <div className="form-group">
+                                                <label>Tipo de datos:</label>
+                                                <select className="form-control" value={this.state.infoType} onChange={this.handleChangeInfoType}>
+                                                    <option value="importes">Importes</option>
+                                                    <option value="operaciones">Numero de operaciones</option>
+                                                </select>
+                                            </div>
+                                        </form>
+                                        </div>
+                                    </Tab>
+                                    <Tab label="OpcGrafica">
+                                    <div className="example-warper">
+                                        <form className="opciones-formulario" onSubmit={this.onClickPreventDefault}>
+                                            <div className="form-group">
+                                                <label>Tipo de grafica:</label>
+                                                <select className="form-control" value={this.state.grafico} onChange={this.handleChangeGrafico}>
+                                                    <option value="line">LINE</option>
+                                                    <option value="area2d">AREA 2D</option>
+                                                    <option value="column2d">BARRAS 2D</option>
+                                                    <option value="column3d">BARRAS 3D</option>
+                                                    <option value="pie2d">PIE 2D</option>
+                                                    <option value="pie3d">PIE 3D</option>
+                                                    <option value="doughnut2d">DONUT 2D</option>
+                                                    <option value="doughnut2d">DONUT 3D</option>
+                                                    <option value="pareto2d">PARETO 2D</option>
+                                                    <option value="pareto3d">PARETO 3D</option>
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Estilo de grafica:</label>
+                                                <select className="form-control" value={this.state.grad} onChange={this.handleChangeGrad}>
+                                                    <option value="0">Solido</option>
+                                                    <option value="1">Desvanecido</option>
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Color de grafica:</label>
+                                                <select className="form-control" value={this.state.colores} onChange={this.handleChangeColores}>
+                                                    <option value="">Colores 1</option>
+                                                    <option value="FF5904,0372AB,FF0000,#1B5E20,#006064,#9b59b6,#008ee4,#B71C1C,#E65100,#004D40,#e44a00,#F57F17,#6baa01">Colores 2</option>
+                                                    <option value="#000000">Blanco y negro</option>
+                                                    <option value="#104865">StoneOcean theme</option>
+                                                </select>
+                                            </div>
+                                        </form>
+                                        </div>
+                                    </Tab>
+                                </Tabs>
                                 <form className="opciones-formulario" onSubmit={this.onClickPreventDefault}>
                                     <div className="form-group">
-                                        <label>Filtro:</label>
-                                        <select className="form-control" value={this.state.opcion} onChange={this.handleChangeOpcion}>
-                                            <option value="fecha">POR FECHAS</option>
-                                            <option value="year">POR AÑO</option>
-                                        </select>
+                                        <button type="submit" onClick={this.generarGrafica.bind(this)} className="btn btn-success btn-block">Generar grafica</button>
                                     </div>
                                 </form>
                                 <hr></hr>
-                                <form className="formularios" onSubmit={this.onClickPreventDefault}>
-
-                                    {op === 'fecha' ? (
-                                        <div>
-                                            <div className="form-group">
-                                                <label>Fecha inicial:</label>
-                                                <Fecha startDate={this.state.fechaInicio} handleChange={this.handleChangeFechaInicio}/>
-                                            </div>
-                                            <div className="form-group">
-                                                <label>Fecha final:</label>
-                                                <Fecha startDate={this.state.fechaFin} handleChange={this.handleChangeFechaFin}/>
-                                            </div>
-                                            <div className="form-group">
-                                                <label>Tipo de grafica:</label>
-                                                <select className="form-control" value={this.state.grafico} onChange={this.handleChangeGrafico}>
-                                                    <option value="line">LINE</option>
-                                                    <option value="area2d">AREA 2D</option>
-                                                    <option value="column2d">BARRAS 2D</option>
-                                                    <option value="column3d">BARRAS 3D</option>
-                                                    <option value="pie2d">PIE 2D</option>
-                                                    <option value="pie3d">PIE 3D</option>
-                                                    <option value="doughnut2d">DONUT 2D</option>
-                                                    <option value="doughnut2d">DONUT 3D</option>
-                                                    <option value="pareto2d">PARETO 2D</option>
-                                                    <option value="pareto3d">PARETO 3D</option>
-                                                </select>
-                                            </div>
-                                            <div className="form-group">
-                                                <label>Estilo de grafica:</label>
-                                                <select className="form-control" value={this.state.grad} onChange={this.handleChangeGrad}>
-                                                    <option value="0">Solido</option>
-                                                    <option value="1">Desvanecido</option>
-                                                </select>
-                                            </div>
-                                            <div className="form-group">
-                                                <label>Color de grafica:</label>
-                                                <select className="form-control" value={this.state.colores} onChange={this.handleChangeColores}>
-                                                    <option value="">Colores 1</option>
-                                                    <option value="FF5904,0372AB,FF0000,#1B5E20,#006064,#9b59b6,#008ee4,#B71C1C,#E65100,#004D40,#e44a00,#F57F17,#6baa01">Colores 2</option>
-                                                    <option value="#000000">Blanco y negro</option>
-                                                    <option value="#104865">StoneOcean theme</option>
-                                                </select>
-                                            </div>
-                                            <div className="form-group">
-                                                <label>Tipo de vista:</label>
-                                                <select className="form-control" value={this.state.infoType} onChange={this.handleChangeInfoType}>
-                                                    <option value="importes">Importes</option>
-                                                    <option value="operaciones">Numero de operaciones</option>
-                                                </select>
-                                            </div>
-                                            <div className="form-group">
-                                                <button type="submit"  onClick={this.generarGrafica.bind(this)} className="btn btn-primary">Generar grafica</button>
-                                            </div>
-                                        </div>
-                                    ):(null)}
-
-                                    {op === 'year' ? (
-                                        <div>
-                                            <div className="form-group">
-                                                <label>Año a buscar:</label>
-                                                <input type="text" className="form-control" value={this.state.anio} onChange={this.handleChangeAnio} />
-                                            </div>
-                                            <div className="form-group">
-                                                <label>Conceptos a buscar:</label>
-                                                <input type="text" className="form-control" value={this.state.listaConceptos} onChange={this.handleChangeListaConceptos} />
-                                            </div>
-                                            <div className="form-group">
-                                                <label>Tipo de grafica:</label>
-                                                <select className="form-control" value={this.state.grafico} onChange={this.handleChangeGrafico}>
-                                                    <option value="line">LINE</option>
-                                                    <option value="area2d">AREA 2D</option>
-                                                    <option value="column2d">BARRAS 2D</option>
-                                                    <option value="column3d">BARRAS 3D</option>
-                                                    <option value="pie2d">PIE 2D</option>
-                                                    <option value="pie3d">PIE 3D</option>
-                                                    <option value="doughnut2d">DONUT 2D</option>
-                                                    <option value="doughnut2d">DONUT 3D</option>
-                                                    <option value="pareto2d">PARETO 2D</option>
-                                                    <option value="pareto3d">PARETO 3D</option>
-                                                </select>
-                                            </div>
-                                            <div className="form-group">
-                                                <label>Estilo de grafica:</label>
-                                                <select className="form-control" value={this.state.grad} onChange={this.handleChangeGrad}>
-                                                    <option value="0">Solido</option>
-                                                    <option value="1">Desvanecido</option>
-                                                </select>
-                                            </div>
-                                            <div className="form-group">
-                                                <label>Color de grafica:</label>
-                                                <select className="form-control" value={this.state.colores} onChange={this.handleChangeColores}>
-                                                    <option value="">Colores 1</option>
-                                                    <option value="FF5904,0372AB,FF0000,#1B5E20,#006064,#9b59b6,#008ee4,#B71C1C,#E65100,#004D40,#e44a00,#F57F17,#6baa01">Colores 2</option>
-                                                    <option value="#000000">Blanco y negro</option>
-                                                    <option value="#104865">StoneOcean theme</option>
-                                                </select>
-                                            </div>
-                                            <div className="form-group">
-                                                <label>Tipo de vista:</label>
-                                                <select className="form-control" value={this.state.infoType} onChange={this.handleChangeInfoType}>
-                                                    <option value="importes">Importes</option>
-                                                    <option value="operaciones">Numero de operaciones</option>
-                                                </select>
-                                            </div>
-                                            <div className="form-group">
-                                                <button type="submit" onClick={this.generarGrafica.bind(this)} className="btn btn-primary">Generar grafica</button>
-                                            </div>
-                                        </div>
-                                    ) : (null)}
-                                </form>
-                                <hr></hr>
                                 <div className="row">
-                                    <div className="col-md-12">
-                                        {this.state.isTableLoaded ? (<BtnExport tableData={this.state.tableData} tableTitle={this.state.titulo} tableSubtitle={this.state.subtitulo}/>) : (console.log())}
+                                    <div className="panel col-md-12">
+                                        {this.state.isTableLoaded ? (<BtnExport tableData={this.state.tableData} tableTitle={this.state.titulo} tableSubtitle={this.state.subtitulo}/>) : (<button className="btn btn-warning btn-block" disabled>Imprimir</button>)}
                                     </div>
                                 </div>
                             </div>
                             <div className="tablero col-md-10" id="estadisticas">
-                                <Tabs align="center" onSelect={(index, label) => console.log(label + ' selected')}>
-                                    <Tab label="Gráfica">
-                                        {this.state.isChartLoaded ?
-                                            (<Chart
-                                                chartData={this.state.chartData}
-                                                grafico={this.state.grafico}
-                                                legendPosition="bottom"
-                                                titulo={this.state.titulo}
-                                                paleta={this.state.colores}
-                                                grad={this.state.grad}
-                                                prefijo={this.state.prefijo}
-                                                subtitulo={this.state.subtitulo}/>)
-                                            :(<div className="App-logo"><br></br><br></br><br></br><br></br>
-                                                                        <br></br><br></br><br></br><br></br>
-                                                                        <br></br><br></br><br></br><br></br>
-                                                                        <h2>Cargando grafica . . .</h2></div>)
-                                        }
-                                    </Tab>
-                                    <Tab label="Tabla">
-                                        {this.state.isTableLoaded ?
-                                            (<Tabla
-                                                tableData={this.state.tableData} />)
-                                            :(<div className="App-logo"><br></br><br></br><br></br><br></br>
-                                                                        <br></br><br></br><br></br><br></br>
-                                                                        <br></br><br></br><br></br><br></br>
-                                                                        <h2>Cargando tabla . . .</h2></div>)}
-                                    </Tab>
-                                </Tabs>
-
-
+                                <div className="form-group">
+                                    <Tabs align="center" onSelect={(index, label) => console.log(label + ' selected')}>
+                                        <Tab label="Gráfica">
+                                            {this.state.isChartLoaded ?
+                                                (<Chart
+                                                    chartData={this.state.chartData}
+                                                    grafico={this.state.grafico}
+                                                    legendPosition="bottom"
+                                                    titulo={this.state.titulo}
+                                                    paleta={this.state.colores}
+                                                    grad={this.state.grad}
+                                                    prefijo={this.state.prefijo}
+                                                    subtitulo={this.state.subtitulo}/>)
+                                                :(<div className="App-logo"><br></br><br></br><br></br><br></br>
+                                                                            <br></br><br></br><br></br><br></br>
+                                                                            <br></br><br></br><br></br><br></br>
+                                                                            <h2>Cargando grafica . . .</h2></div>)
+                                            }
+                                        </Tab>
+                                        <Tab label="Tabla">
+                                            {this.state.isTableLoaded ?
+                                                (<Tabla
+                                                    tableData={this.state.tableData} />)
+                                                :(<div className="App-logo"><br></br><br></br><br></br><br></br>
+                                                                            <br></br><br></br><br></br><br></br>
+                                                                            <br></br><br></br><br></br><br></br>
+                                                                            <h2>Cargando tabla . . .</h2></div>)}
+                                        </Tab>
+                                    </Tabs>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </section>
+            </div>
             </div>
         );
     }

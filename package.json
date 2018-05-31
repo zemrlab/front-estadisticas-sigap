@@ -18,7 +18,10 @@
     "react-datepicker": "^1.4.1",
     "react-dom": "^16.3.2",
     "react-fusioncharts": "^1.0.5",
-    "react-scripts": "1.1.4"
+    "react-native-elements": "^0.19.1",
+    "react-onclickoutside": "^6.7.1",
+    "react-scripts": "1.1.4",
+    "reactjs-popup": "^1.1.1"
   },
   "scripts": {
     "start": "react-scripts start",

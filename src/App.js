@@ -7,6 +7,9 @@ import Tabla from './componentes/tabla';
 import {Tabs, Tab} from 'react-bootstrap-tabs';
 import ToolTipPosition from "./componentes/ToolTipPositions";
 import Warper from "./componentes/Warper";
+import SelectGrafica from "./componentes/selectForGrafica";
+import SelectYear from "./componentes/selectYear";
+import SelectMonth from "./componentes/selectMonth";
 
 class App extends Component {
 
@@ -29,10 +32,9 @@ class App extends Component {
             grafico : 'column2d',
             anioini : '2015',
             aniofin : '2015',
-            mesini : '',
-            mesfin : '',
-            diaini : '',
-            diafin : '',
+            anio: '2015',
+            mesini : '1',
+            mesfin : '12',
             opcion : 'fecha',
             colores : "",
             grad : "0",
@@ -44,6 +46,10 @@ class App extends Component {
         this.handleChangeGrafico = this.handleChangeGrafico.bind(this);
         this.handleChangeGrad = this.handleChangeGrad.bind(this);
         this.handleChangeAnio = this.handleChangeAnio.bind(this);
+        this.handleChangeAnioIni = this.handleChangeAnioIni.bind(this);
+        this.handleChangeAnioFin = this.handleChangeAnioFin.bind(this);
+        this.handleChangeMesIni = this.handleChangeMesIni.bind(this);
+        this.handleChangeMesFin = this.handleChangeMesFin.bind(this);
         this.handleChangeOpcion = this.handleChangeOpcion.bind(this);
         this.handleChangeColores = this.handleChangeColores.bind(this);
         this.handleChangeInfoType = this.handleChangeInfoType.bind(this);
@@ -99,6 +105,34 @@ class App extends Component {
             anio: event.target.value
         });
         console.log(this.state.anio);
+    }
+
+    handleChangeMesIni(event) {
+        this.setState({
+            mesini: event.target.value
+        });
+        console.log(this.state.mesini);
+    }
+
+    handleChangeMesFin(event) {
+        this.setState({
+            mesfin: event.target.value
+        });
+        console.log(this.state.mesfin);
+    }
+
+    handleChangeAnioIni(event) {
+        this.setState({
+            anioini: event.target.value
+        });
+        console.log(this.state.anioini);
+    }
+
+    handleChangeAnioFin(event) {
+        this.setState({
+            aniofin: event.target.value
+        });
+        console.log(this.state.aniofin);
     }
 
     handleChangeOpcion(event) {
@@ -196,22 +230,41 @@ class App extends Component {
                 this.getChartData(encodeURI(urlChart));
             }
         }
-        else{
+        else if(this.state.opcion === 'months'){
             if(this.state.infoType === "operaciones"){
-                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/devolverAnioCantidad?year='+this.state.anio;
+                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/cantidadPorPeriodoMes?year='+this.state.anio+'&mes_inicio='+this.state.mesini+'&mes_fin='+this.state.mesfin;
                 this.setState({
                     isChartLoaded : false,
                     titulo: 'REPORTE ESTADISTICO DE NUMERO DE OPERACIONES POR CONCEPTO',
-                    subtitulo : ("DURANTE EL AÑO " + this.state.anio)
+                    subtitulo : ("AÑO " + this.state.anio + " | DE " + this.state.mesini+' A '+this.state.mesfin)
                 });
                 this.getChartData(encodeURI(urlChart));
             }
             else{
-                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/devolverAnioImporte/?year='+this.state.anio;
+                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/totalPorPeriodoMes/?year='+this.state.anio+'&mes_inicio='+this.state.mesini+'&mes_fin='+this.state.mesfin;
                 this.setState({
                     isChartLoaded : false,
                     titulo: 'REPORTE ESTADISTICO DE IMPORTES POR CONCEPTO',
-                    subtitulo : ("DURANTE EL AÑO " + this.state.anio)
+                    subtitulo : ("AÑO " + this.state.anio + " | DE " + this.state.mesini+' A '+this.state.mesfin)
+                });
+                this.getChartData(encodeURI(urlChart));
+            }
+        }else{
+            if(this.state.infoType === "operaciones"){
+                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/cantidadPorPeriodoAnio?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin;
+                this.setState({
+                    isChartLoaded : false,
+                    titulo: 'REPORTE ESTADISTICO DE NUMERO DE OPERACIONES POR CONCEPTO',
+                    subtitulo : ("DEL AÑO " + this.state.anioini + " AL " + this.state.aniofin)
+                });
+                this.getChartData(encodeURI(urlChart));
+            }
+            else{
+                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/montoPorPeriodoAnio/?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin;
+                this.setState({
+                    isChartLoaded : false,
+                    titulo: 'REPORTE ESTADISTICO DE IMPORTES POR CONCEPTO',
+                    subtitulo : ("DEL AÑO " + this.state.anioini + " AL " + this.state.aniofin)
                 });
                 this.getChartData(encodeURI(urlChart));
             }
@@ -359,9 +412,9 @@ class App extends Component {
                                             <div className="form-group">
                                                 <label>Filtro:</label>
                                                 <select className="form-control" value={this.state.opcion} onChange={this.handleChangeOpcion}>
-                                                    <option value="fecha">DE FECHA A FECHA</option>
-                                                    <option value="months">POR MESES DEL AÑO</option>
-                                                    <option value="years">DE AÑO A AÑO</option>
+                                                    <option value="fecha">FECHA A FECHA</option>
+                                                    <option value="months">MES A MES</option>
+                                                    <option value="years">AÑO A AÑO</option>
                                                 </select>
                                             </div>
                                             <hr></hr>
@@ -369,11 +422,11 @@ class App extends Component {
                                                 <div>
                                                     <div className="form-group">
                                                         <label>Fecha inicial:</label>
-                                                        <Fecha startDate={this.state.fechaInicio} handleChange={this.handleChangeFechaInicio}/>
+                                                        <Fecha startDate={this.state.fechaInicio} formato="DD/MM/YYYY" handleChange={this.handleChangeFechaInicio}/>
                                                     </div>
                                                     <div className="form-group">
                                                         <label>Fecha final:</label>
-                                                        <Fecha startDate={this.state.fechaFin} handleChange={this.handleChangeFechaFin}/>
+                                                        <Fecha startDate={this.state.fechaFin} formato="DD/MM/YYYY" handleChange={this.handleChangeFechaFin}/>
                                                     </div>
                                                 </div>
                                             ):(null)}
@@ -381,12 +434,13 @@ class App extends Component {
                                             {op === 'months' ? (
                                                 <div>
                                                     <div className="form-group">
-                                                        <label>Año a buscar:</label>
-                                                        <input type="text" className="form-control" value={this.state.anio} onChange={this.handleChangeAnio} />
+                                                        <SelectYear titulo="Año a buscar:" anio={this.state.anio} cambiar={this.handleChangeAnio} />
                                                     </div>
                                                     <div className="form-group">
-                                                        <label>Conceptos a buscar:</label>
-                                                        <input type="text" className="form-control" value={this.state.listaConceptos} onChange={this.handleChangeListaConceptos} />
+                                                        <SelectMonth titulo="Mes inicial:" mes={this.state.mesini} cambiar={this.handleChangeMesIni} />
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <SelectMonth titulo="Mes final:" mes={this.state.mesfin} cambiar={this.handleChangeMesFin} />
                                                     </div>
                                                 </div>
                                             ) : (null)}
@@ -394,12 +448,10 @@ class App extends Component {
                                             {op === 'years' ? (
                                                 <div>
                                                     <div className="form-group">
-                                                        <label>Año inicial:</label>
-                                                        <input type="text" className="form-control" value={this.state.anio} onChange={this.handleChangeAnio} />
+                                                        <SelectYear titulo="Año inicial:" anio={this.state.anioini} cambiar={this.handleChangeAnioIni} />
                                                     </div>
                                                     <div className="form-group">
-                                                        <label>Año final:</label>
-                                                        <input type="text" className="form-control" value={this.state.anio} onChange={this.handleChangeAnio} />
+                                                        <SelectYear titulo="Año final:" anio={this.state.aniofin} cambiar={this.handleChangeAnioFin} />
                                                     </div>
                                                 </div>
                                             ) : (null)}
@@ -414,54 +466,23 @@ class App extends Component {
                                         </div>
                                     </Tab>
                                     <Tab label="OpcGrafica">
-                                    <div className="example-warper">
-                                        <form className="opciones-formulario" onSubmit={this.onClickPreventDefault}>
-                                            <div className="form-group">
-                                                <label>Tipo de grafica:</label>
-                                                <select className="form-control" value={this.state.grafico} onChange={this.handleChangeGrafico}>
-                                                    <option value="line">LINE</option>
-                                                    <option value="area2d">AREA 2D</option>
-                                                    <option value="column2d">BARRAS 2D</option>
-                                                    <option value="column3d">BARRAS 3D</option>
-                                                    <option value="pie2d">PIE 2D</option>
-                                                    <option value="pie3d">PIE 3D</option>
-                                                    <option value="doughnut2d">DONUT 2D</option>
-                                                    <option value="doughnut2d">DONUT 3D</option>
-                                                    <option value="pareto2d">PARETO 2D</option>
-                                                    <option value="pareto3d">PARETO 3D</option>
-                                                </select>
-                                            </div>
-                                            <div className="form-group">
-                                                <label>Estilo de grafica:</label>
-                                                <select className="form-control" value={this.state.grad} onChange={this.handleChangeGrad}>
-                                                    <option value="0">Solido</option>
-                                                    <option value="1">Desvanecido</option>
-                                                </select>
-                                            </div>
-                                            <div className="form-group">
-                                                <label>Color de grafica:</label>
-                                                <select className="form-control" value={this.state.colores} onChange={this.handleChangeColores}>
-                                                    <option value="">Colores 1</option>
-                                                    <option value="FF5904,0372AB,FF0000,#1B5E20,#006064,#9b59b6,#008ee4,#B71C1C,#E65100,#004D40,#e44a00,#F57F17,#6baa01">Colores 2</option>
-                                                    <option value="#000000">Blanco y negro</option>
-                                                    <option value="#104865">StoneOcean theme</option>
-                                                </select>
-                                            </div>
-                                        </form>
+                                        <div className="example-warper">
+                                            <form className="opciones-formulario" onSubmit={this.onClickPreventDefault}>
+                                                <SelectGrafica grafico={this.state.grafico} grad={this.state.grad} colores={this.state.colores} cambioGrafico={this.handleChangeGrafico} cambioGrad={this.handleChangeGrad} cambioColores={this.handleChangeColores}/>
+                                            </form>
                                         </div>
                                     </Tab>
                                 </Tabs>
+
+                                <br></br>
                                 <form className="opciones-formulario" onSubmit={this.onClickPreventDefault}>
                                     <div className="form-group">
                                         <button type="submit" onClick={this.generarGrafica.bind(this)} className="btn btn-success btn-block">Generar grafica</button>
                                     </div>
-                                </form>
-                                <hr></hr>
-                                <div className="row">
-                                    <div className="panel col-md-12">
+                                    <div className="form-group">
                                         {this.state.isTableLoaded ? (<BtnExport tableData={this.state.tableData} tableTitle={this.state.titulo} tableSubtitle={this.state.subtitulo}/>) : (<button className="btn btn-warning btn-block" disabled>Imprimir</button>)}
                                     </div>
-                                </div>
+                                </form>
                             </div>
                             <div className="tablero col-md-10" id="estadisticas">
                                 <div className="form-group">

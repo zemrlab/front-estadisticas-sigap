@@ -7,7 +7,7 @@ class Fecha extends Component{
     constructor(props){
         super(props);
         this.state = {
-            dateFormat : "DD/MM/YYYY",
+            dateFormat : props.formato,
             className : "form-control"
         };
     }

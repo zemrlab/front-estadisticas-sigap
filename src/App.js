@@ -56,13 +56,23 @@ class App extends Component {
         this.handleChangePrefijo = this.handleChangePrefijo.bind(this);
         this.handleChangeListaConceptos = this.handleChangeListaConceptos.bind(this);
         this.handleChangeIndexTab = this.handleChangeIndexTab.bind(this);
+        this.updateVerdades = this.updateVerdades.bind(this);
+        this.cambiarVerdades = this.cambiarVerdades.bind(this);
+        this.revisarConceptos = this.revisarConceptos.bind(this);
     }
 
-    cambioVerdades(n){
-        var verdaux = [];
-        for(var i in this.state.verdades){
-            if(i===n){verdaux.push("true")}
-            if(i!==n){verdaux.push("false")}
+    cambiarVerdades(vs){
+        this.setState({
+            verdades: vs
+        });
+    }
+
+    updateVerdades(n) {
+        return event =>{
+            let verdadesCopy = JSON.parse(JSON.stringify(this.state.verdades));
+            verdadesCopy[n].value = !(verdadesCopy[n].value);
+            this.cambiarVerdades(verdadesCopy);
+            console.log(this.state.verdades);
         }
     }
 
@@ -183,8 +193,9 @@ class App extends Component {
     componentDidMount(){
         var urlChart = 'https://back-estadisticas.herokuapp.com/apiController/importe?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin;
         var urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaFechas/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin;
+        var urlConceptos = 'https://back-estadisticas.herokuapp.com/apiController/listaConceptos';
 
-        this.getConceptsData(encodeURI(urlChart));
+        this.getConceptsData(encodeURI(urlConceptos));
         this.getChartData(encodeURI(urlChart));
         this.getTableData(encodeURI(urlTable));
 
@@ -192,6 +203,9 @@ class App extends Component {
 
     generarGrafica(){
         var urlChart = '';
+        this.revisarConceptos();
+        console.log("listaConceptos : "+ this.state.listaConceptos);
+        var urlConceptos = 'https://back-estadisticas.herokuapp.com/apiController/listaConceptos';
         if(this.state.opcion === 'fecha'){
             if(this.state.infoType === "operaciones"){
                 urlChart = 'https://back-estadisticas.herokuapp.com/apiController/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin;
@@ -269,7 +283,7 @@ class App extends Component {
                 this.getChartData(encodeURI(urlChart));
             }
         }
-        this.getConceptsData(encodeURI(urlChart));
+        this.getConceptsData(encodeURI(urlConceptos));
     }
 
     getChartData(urlChart){
@@ -298,7 +312,7 @@ class App extends Component {
         })
     }
 
-    crearInputsCheckers(){
+    /*crearInputsCheckers(){
         const objs = [];
         console.log(this.state.conceptsData);
         console.log(this.state.verdades);
@@ -306,15 +320,35 @@ class App extends Component {
             objs.push(
                 <div key={i}>
                     <label>{this.state.conceptsData[i]["label"]}</label>
-                    <input
-                        type="checkbox"
-                        onChange={this.cambioVerdades(i)}
-                        defaultChecked={this.state.verdades[i]["value"]}
-                    />
+                    <input type="checkbox" onChange={this.updateVerdades(i)} defaultChecked={this.state.verdades[i].value}/>
                 </div>
             )
         }
         return objs;
+    }*/
+
+    revisarConceptos(){
+        var lista = "";
+        var total = 0;
+        for(var i in this.state.conceptsData){
+            if(this.state.verdades[i].value === true){
+                total++;
+            }
+        }
+        var inc=0;
+        for(var j in this.state.conceptsData){
+            if(this.state.verdades[j].value === true){
+                inc++;
+                if(inc===total){
+                    lista = lista + this.state.conceptsData[j].label;
+                }else{
+                    lista = lista + this.state.conceptsData[j].label + "|";
+                }
+            }
+        }
+        this.setState({
+            listaConceptos : lista
+        });
     }
 
 
@@ -328,10 +362,10 @@ class App extends Component {
             var conceptsData1=[];
             var verdaux1=[];
 
-            for(var i in result.labels)
+            for(var i in result.conceptos)
             {
-                conceptsData1.push({label: result['labels'][i]});
-                verdaux1.push({value : true});
+                conceptsData1.push({id : i,label: result['conceptos'][i]});
+                verdaux1.push({id : i,value : true});
             }
             this.setState({
                 conceptsData : conceptsData1,
@@ -407,7 +441,12 @@ class App extends Component {
                                         <form className="opciones-formulario" onSubmit={this.onClickPreventDefault}>
                                             <div className="form-group">
                                                 {this.state.isConceptsLoaded ?
-                                                    (<ToolTipPosition />) : (<button className="btn btn-info btn-block" disabled>Escoger conceptos</button>)}
+                                                    (<ToolTipPosition
+                                                        conceptsData={this.state.conceptsData}
+                                                        verdades={this.state.verdades}
+                                                        updateVerdades={this.updateVerdades}
+                                                        />)
+                                                    :(<button className="btn btn-info btn-block" disabled>Escoger conceptos</button>)}
                                             </div>
                                             <div className="form-group">
                                                 <label>Filtro:</label>

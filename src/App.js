@@ -39,7 +39,8 @@ class App extends Component {
             colores : "",
             grad : "0",
             prefijo : "S/",
-            listaConceptos : ""
+            listaConceptos : "",
+            todos : true
         };
         this.handleChangeFechaInicio = this.handleChangeFechaInicio.bind(this);
         this.handleChangeFechaFin = this.handleChangeFechaFin.bind(this);
@@ -59,6 +60,7 @@ class App extends Component {
         this.updateVerdades = this.updateVerdades.bind(this);
         this.cambiarVerdades = this.cambiarVerdades.bind(this);
         this.revisarConceptos = this.revisarConceptos.bind(this);
+        this.updateTodos = this.updateTodos.bind(this);
     }
 
     cambiarVerdades(vs){
@@ -74,6 +76,27 @@ class App extends Component {
             this.cambiarVerdades(verdadesCopy);
             console.log(this.state.verdades);
         }
+    }
+
+    updateTodos(valor){
+        return event =>{
+            let verdadesCopy = JSON.parse(JSON.stringify(this.state.verdades));
+            for(var i in verdadesCopy){
+                verdadesCopy[i].value = !valor;
+            }
+            this.cambiarVerdades(verdadesCopy);
+            this.setState({
+                todos : !valor
+            });
+            console.log(this.state.todos);
+            console.log(this.state.verdades);
+        }
+    }
+
+    handleChangeTodos(t){
+        this.setState({
+            todos : t
+        });
     }
 
     handleChangeIndexTab(index){
@@ -191,8 +214,8 @@ class App extends Component {
     }
 
     componentDidMount(){
-        var urlChart = 'https://back-estadisticas.herokuapp.com/apiController/importe?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin;
-        var urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaFechas/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin;
+        var urlChart = 'https://back-estadisticas.herokuapp.com/apiController/importe?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+this.state.listaConceptos;
+        var urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaFechas/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+this.state.listaConceptos;
         var urlConceptos = 'https://back-estadisticas.herokuapp.com/apiController/listaConceptos';
 
         this.getConceptsData(encodeURI(urlConceptos));
@@ -207,8 +230,9 @@ class App extends Component {
         console.log("listaConceptos : "+ this.state.listaConceptos);
         var urlConceptos = 'https://back-estadisticas.herokuapp.com/apiController/listaConceptos';
         if(this.state.opcion === 'fecha'){
+            var urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaFechas/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+this.state.listaConceptos;
             if(this.state.infoType === "operaciones"){
-                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin;
+                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+this.state.listaConceptos;
                 var fi = new Date(this.state.fechaInicio*1000);
                 var ff = new Date(this.state.fechaFin*1000);
                 this.setState({
@@ -226,7 +250,7 @@ class App extends Component {
                 this.getChartData(encodeURI(urlChart));
             }
             else{
-                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/importe?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin;
+                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/importe?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+this.state.listaConceptos;
                 fi = new Date(this.state.fechaInicio*1000);
                 ff = new Date(this.state.fechaFin*1000);
                 this.setState({
@@ -245,8 +269,9 @@ class App extends Component {
             }
         }
         else if(this.state.opcion === 'months'){
+            var urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaMonth/?year='+this.state.anio+'&mes_inicio='+this.state.mesini+'&mes_fin='+this.state.mesfin+'&conceptos='+this.state.listaConceptos;
             if(this.state.infoType === "operaciones"){
-                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/cantidadPorPeriodoMes?year='+this.state.anio+'&mes_inicio='+this.state.mesini+'&mes_fin='+this.state.mesfin;
+                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/cantidadPorPeriodoMes?year='+this.state.anio+'&mes_inicio='+this.state.mesini+'&mes_fin='+this.state.mesfin+'&conceptos='+this.state.listaConceptos;
                 this.setState({
                     isChartLoaded : false,
                     titulo: 'REPORTE ESTADISTICO DE NUMERO DE OPERACIONES POR CONCEPTO',
@@ -255,7 +280,7 @@ class App extends Component {
                 this.getChartData(encodeURI(urlChart));
             }
             else{
-                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/totalPorPeriodoMes/?year='+this.state.anio+'&mes_inicio='+this.state.mesini+'&mes_fin='+this.state.mesfin;
+                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/totalPorPeriodoMes/?year='+this.state.anio+'&mes_inicio='+this.state.mesini+'&mes_fin='+this.state.mesfin+'&conceptos='+this.state.listaConceptos;
                 this.setState({
                     isChartLoaded : false,
                     titulo: 'REPORTE ESTADISTICO DE IMPORTES POR CONCEPTO',
@@ -264,8 +289,9 @@ class App extends Component {
                 this.getChartData(encodeURI(urlChart));
             }
         }else{
+            var urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaYear/?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin+'&conceptos='+this.state.listaConceptos;
             if(this.state.infoType === "operaciones"){
-                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/cantidadPorPeriodoAnio?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin;
+                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/cantidadPorPeriodoAnio?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin+'&conceptos='+this.state.listaConceptos;
                 this.setState({
                     isChartLoaded : false,
                     titulo: 'REPORTE ESTADISTICO DE NUMERO DE OPERACIONES POR CONCEPTO',
@@ -274,7 +300,7 @@ class App extends Component {
                 this.getChartData(encodeURI(urlChart));
             }
             else{
-                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/montoPorPeriodoAnio/?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin;
+                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/montoPorPeriodoAnio/?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin+'&conceptos='+this.state.listaConceptos;
                 this.setState({
                     isChartLoaded : false,
                     titulo: 'REPORTE ESTADISTICO DE IMPORTES POR CONCEPTO',
@@ -283,6 +309,7 @@ class App extends Component {
                 this.getChartData(encodeURI(urlChart));
             }
         }
+        this.getTableData(encodeURI(urlTable));
         this.getConceptsData(encodeURI(urlConceptos));
     }
 
@@ -306,8 +333,7 @@ class App extends Component {
 
             this.setState({
                 chartData : chartData1 ,
-                isChartLoaded : true,
-
+                isChartLoaded : true
             });
         })
     }
@@ -365,12 +391,12 @@ class App extends Component {
             for(var i in result.conceptos)
             {
                 conceptsData1.push({id : i,label: result['conceptos'][i]});
-                verdaux1.push({id : i,value : true});
+                verdaux1.push({id : i,value : this.state.todos});
             }
             this.setState({
                 conceptsData : conceptsData1,
                 verdades : verdaux1,
-                isConceptsLoaded : true,
+                isConceptsLoaded : true
             });
 
         })
@@ -384,7 +410,7 @@ class App extends Component {
             .then((result) => {
                 this.setState({
                     tableData: result,
-                    isTableLoaded: true,
+                    isTableLoaded: true
                 });
             })
     }
@@ -444,8 +470,10 @@ class App extends Component {
                                                     (<ToolTipPosition
                                                         conceptsData={this.state.conceptsData}
                                                         verdades={this.state.verdades}
+                                                        todos={this.state.todos}
                                                         updateVerdades={this.updateVerdades}
-                                                        />)
+                                                        updateTodos={this.updateTodos}
+                                                    />)
                                                     :(<button className="btn btn-info btn-block" disabled>Escoger conceptos</button>)}
                                             </div>
                                             <div className="form-group">

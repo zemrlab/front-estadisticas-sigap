@@ -9,9 +9,15 @@ class ToolTipPositions extends Component{
 
     crearInputsCheckers(){
         const objs = [];
+        objs.push(
+            <div key={0}>
+                <label>TODOS</label>
+                <input type="checkbox" onChange={this.props.updateTodos(this.props.todos)} defaultChecked={this.props.todos}/>
+            </div>
+        );
         for(var i in this.props.conceptsData){
             objs.push(
-                <div key={i}>
+                <div key={i+1}>
                     <label>{this.props.conceptsData[i]["label"]}</label>
                     <input type="checkbox" onChange={this.props.updateVerdades(i)} defaultChecked={this.props.verdades[i].value}/>
                 </div>

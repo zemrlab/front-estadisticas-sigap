@@ -478,7 +478,7 @@ class App extends Component {
                         <div className="row">
                             <div className="panel col-md-2">
                                 <Tabs align="center" defaultActiveKey={this.state.indextab} onSelect={(index, label) => console.log(label + ' selected')}>
-                                    <Tab label="OpcDatos">
+                                    <Tab label="Datos">
                                         <div className="example-warper">
                                         <form className="opciones-formulario" onSubmit={this.onClickPreventDefault}>
                                             <div className="form-group">
@@ -551,7 +551,7 @@ class App extends Component {
                                         </form>
                                         </div>
                                     </Tab>
-                                    <Tab label="OpcGrafica">
+                                    <Tab label="Grafica">
                                         <div className="example-warper">
                                             <form className="opciones-formulario" onSubmit={this.onClickPreventDefault}>
                                                 <SelectGrafica grafico={this.state.grafico} grad={this.state.grad} colores={this.state.colores} cambioGrafico={this.handleChangeGrafico} cambioGrad={this.handleChangeGrad} cambioColores={this.handleChangeColores}/>

@@ -1,54 +1,44 @@
 import React, { Component } from 'react';
-import Warper from "./Warper";
 import Popup from "reactjs-popup";
+import {Checkbox, CheckboxGroup} from 'react-checkbox-group';
 
 class ToolTipPositions extends Component{
     constructor(props){
         super(props);
     }
 
-    crearInputsCheckers(){
+    crearGroupCheckers(){
         const objs = [];
-        objs.push(
-            <div key={0}>
-                <label>TODOS</label>
-                <input type="checkbox" onChange={this.props.updateTodos(this.props.todos)} defaultChecked={this.props.todos}/>
-            </div>
-        );
         for(var i in this.props.conceptsData){
-            objs.push(
-                <div key={i+1}>
-                    <label>{this.props.conceptsData[i]["label"]}</label>
-                    <input type="checkbox" onChange={this.props.updateVerdades(i)} defaultChecked={this.props.verdades[i].value}/>
-                </div>
-            );
+            objs.push(<label key={i}><Checkbox value={this.props.conceptsData[i]["label"]}/>{this.props.conceptsData[i]["label"]}</label>);
         }
         return objs;
     }
 
     render(){
         return(
-        <div>
-            <Popup trigger={<button className="btn btn-info btn-block">Escoger conceptos</button>} position="right top" on="hover">
-                <div className="card">
-                    <br></br>
-                    <div className="content">
-                        {this.crearInputsCheckers()}
+            <div>
+                <Popup trigger={<button className="btn btn-info btn-block"><b>Escoger conceptos</b></button>} position="right top" on="hover">
+                    <div className="card">
+                        {this.props.todos===true ?
+                            (<button className="btn btn-info btn-block" onClick={this.props.todosChanged}><b>Marcar todos</b></button>)
+                            :((<button className="btn btn-info btn-block" onClick={this.props.ningunoChanged}><b>Desmarcar todos</b></button>))
+                        }
+                        <br></br>
+                        <CheckboxGroup
+                            checkboxDepth={2} // This is needed to optimize the checkbox group
+                            name="conceptos"
+                            value={this.props.conceptos}
+                            onChange={this.props.conceptosChanged}
+                        >
+                            {this.crearGroupCheckers()}
+                        </CheckboxGroup>
+                        <br></br>
                     </div>
-                    <br></br>
-                </div>
-            </Popup>
-        </div>
+                </Popup>
+            </div>
         );
     }
 }
-
-const Card = ({ title }) => (
-    <div className="card">
-        <div className="content">
-            {this.state.child}
-        </div>
-    </div>
-);
 
 export default ToolTipPositions;

@@ -48,7 +48,7 @@ class BtnExport extends Component{
                     dn = "p.m"
                     Hora = Hora - 12
                 }
-                if (Hora == 0)
+                if (Hora === 0)
                     Hora = 12
 
                 if (Hora <= 9) Hora = "0" + Hora
@@ -83,9 +83,9 @@ class BtnExport extends Component{
             var nombreSistema = "SIGAP";
             var version = "1.0";
             var doc=Format();
-            var Dia = new Array("Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sabado", "Domingo");
-            var Mes = new Array("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre",
-                    "Octubre", "Noviembre", "Diciembre");
+            var Dia = new Array(["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sabado", "Domingo"]);
+            var Mes = new Array(["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre",
+                    "Octubre", "Noviembre", "Diciembre"]);
             var Hoy = new Date();
             var Anio = Hoy.getFullYear();
             var Fecha = Dia[Hoy.getDay()] + ", " + Hoy.getDate() + " de " + Mes[Hoy.getMonth()] + " de " + Anio + ". ";
@@ -124,7 +124,7 @@ class BtnExport extends Component{
                 docTabla.autoTable(columns, rows, {
                     margin: { top: 45 },
                     addPageContent: function (data) {
-                        margin: { top : 15};
+                        //margin: { top : 15};
                         pie(docTabla,nombreSistema,version);
                     }
                 });
@@ -157,7 +157,7 @@ class BtnExport extends Component{
     render() {
         return (<div>
             <div className="mb5">
-                <button className="btn btn-warning btn-block" onClick={this.printDocument}>Imprimir</button>
+                <button className="btn btn-warning btn-block" onClick={this.printDocument}><b>Imprimir</b></button>
             </div>
         </div>);
     }

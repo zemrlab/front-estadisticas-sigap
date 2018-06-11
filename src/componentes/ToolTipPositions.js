@@ -3,15 +3,12 @@ import Popup from "reactjs-popup";
 import {Checkbox, CheckboxGroup} from 'react-checkbox-group';
 
 class ToolTipPositions extends Component{
-    constructor(props){
-        super(props);
-    }
 
     crearGroupCheckers(){
         const objs = [];
         for(var i in this.props.conceptsData){
             objs.push(<label align="center" key={i*2}><Checkbox value={this.props.conceptsData[i]["label"]}/> {this.props.conceptsData[i]["label"]} </label>);
-            objs.push(<br key={i*2 + 1}></br>)
+            objs.push(<br key={i*2 + 1}></br>);
         }
         return objs;
     }

@@ -6,7 +6,6 @@ import BtnExport from './componentes/btn-export';
 import Tabla from './componentes/tabla';
 import {Tabs, Tab} from 'react-bootstrap-tabs';
 import ToolTipPosition from "./componentes/ToolTipPositions";
-import Warper from "./componentes/Warper";
 import SelectGrafica from "./componentes/selectForGrafica";
 import SelectYear from "./componentes/selectYear";
 import SelectMonth from "./componentes/selectMonth";
@@ -102,27 +101,6 @@ class App extends Component {
             console.log(this.state.verdades);
         }
     }
-    /*
-    updateTodos(valor){
-        return event =>{
-            let verdadesCopy = JSON.parse(JSON.stringify(this.state.verdades));
-            for(var i in verdadesCopy){
-                verdadesCopy[i].value = !valor;
-            }
-            this.cambiarVerdades(verdadesCopy);
-            this.setState({
-                todos : !valor
-            });
-            console.log(this.state.todos);
-            console.log(this.state.verdades);
-        }
-    }
-
-    handleChangeTodos(t){
-        this.setState({
-            todos : t
-        });
-    }*/
 
     handleChangeIndexTab(index){
         this.setState({
@@ -252,10 +230,11 @@ class App extends Component {
     generarGrafica(listaFinal){
         //return event => (
         var urlChart = '';
+        var urlTable = '';
         console.log("listaConceptos : "+ listaFinal);
         var urlConceptos = 'https://back-estadisticas.herokuapp.com/apiController/listaConceptos';
         if(this.state.opcion === 'fecha'){
-            var urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaFechas/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+listaFinal;
+            urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaFechas/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+listaFinal;
             if(this.state.infoType === "operaciones"){
                 urlChart = 'https://back-estadisticas.herokuapp.com/apiController/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+listaFinal;
                 var fi = new Date(this.state.fechaInicio*1000);
@@ -294,7 +273,7 @@ class App extends Component {
             }
         }
         else if(this.state.opcion === 'months'){
-            var urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaMonth/?year='+this.state.anio+'&mes_inicio='+this.state.mesini+'&mes_fin='+this.state.mesfin+'&conceptos='+listaFinal;
+            urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaMonth/?year='+this.state.anio+'&mes_inicio='+this.state.mesini+'&mes_fin='+this.state.mesfin+'&conceptos='+listaFinal;
             if(this.state.infoType === "operaciones"){
                 urlChart = 'https://back-estadisticas.herokuapp.com/apiController/cantidadPorPeriodoMes?year='+this.state.anio+'&mes_inicio='+this.state.mesini+'&mes_fin='+this.state.mesfin+'&conceptos='+listaFinal;
                 this.setState({
@@ -314,7 +293,7 @@ class App extends Component {
                 this.getChartData(encodeURI(urlChart));
             }
         }else{
-            var urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaYear/?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin+'&conceptos='+listaFinal;
+            urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaYear/?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin+'&conceptos='+listaFinal;
             if(this.state.infoType === "operaciones"){
                 urlChart = 'https://back-estadisticas.herokuapp.com/apiController/cantidadPorPeriodoAnio?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin+'&conceptos='+listaFinal;
                 this.setState({
@@ -380,7 +359,6 @@ class App extends Component {
 
     revisarConceptos(){
         var lista = "";
-        var total = 0;
         for(var i in this.state.conceptos){
             lista = lista + this.state.conceptos[i] + "|";
         }
@@ -478,7 +456,7 @@ class App extends Component {
                         <div className="row">
                             <div className="panel col-md-2">
                                 <Tabs align="center" defaultActiveKey={this.state.indextab} onSelect={(index, label) => console.log(label + ' selected')}>
-                                    <Tab label="Datos">
+                                    <Tab label={<b>Datos</b>}>
                                         <div className="example-warper">
                                         <form className="opciones-formulario" onSubmit={this.onClickPreventDefault}>
                                             <div className="form-group">
@@ -551,7 +529,7 @@ class App extends Component {
                                         </form>
                                         </div>
                                     </Tab>
-                                    <Tab label="Grafica">
+                                    <Tab label={<b>Grafica</b>}>
                                         <div className="example-warper">
                                             <form className="opciones-formulario" onSubmit={this.onClickPreventDefault}>
                                                 <SelectGrafica grafico={this.state.grafico} grad={this.state.grad} colores={this.state.colores} cambioGrafico={this.handleChangeGrafico} cambioGrad={this.handleChangeGrad} cambioColores={this.handleChangeColores}/>
@@ -563,17 +541,17 @@ class App extends Component {
                                 <br></br>
                                 <form className="opciones-formulario" onSubmit={this.onClickPreventDefault}>
                                     <div className="form-group">
-                                        {this.state.isConceptsLoaded === true ? (<button type="submit" onClick={this.generarGrafica.bind(this,listaFinal)} className="btn btn-success btn-block">Generar grafica</button>):(<button className="btn btn-success btn-block" disabled >Generar grafica</button>)}
+                                        {this.state.isConceptsLoaded === true ? (<button type="submit" onClick={this.generarGrafica.bind(this,listaFinal)} className="btn btn-success btn-block"><b>Generar grafica</b></button>):(<button className="btn btn-success btn-block" disabled ><b>Generar grafica</b></button>)}
                                     </div>
                                     <div className="form-group">
-                                        {this.state.isTableLoaded ? (<BtnExport tableData={this.state.tableData} tableTitle={this.state.titulo} tableSubtitle={this.state.subtitulo}/>) : (<button className="btn btn-warning btn-block" disabled>Imprimir</button>)}
+                                        {this.state.isTableLoaded ? (<BtnExport tableData={this.state.tableData} tableTitle={this.state.titulo} tableSubtitle={this.state.subtitulo}/>) : (<button className="btn btn-warning btn-block" disabled><b>Imprimir</b></button>)}
                                     </div>
                                 </form>
                             </div>
                             <div className="tablero col-md-10" id="estadisticas">
                                 <div className="form-group">
                                     <Tabs align="center" onSelect={(index, label) => console.log(label + ' selected')}>
-                                        <Tab label="Gráfica">
+                                        <Tab label={<b>Grafica</b>}>
                                             {this.state.isChartLoaded ?
                                                 (<Chart
                                                     chartData={this.state.chartData}
@@ -590,7 +568,7 @@ class App extends Component {
                                                                             <h2>Cargando grafica . . .</h2></div>)
                                             }
                                         </Tab>
-                                        <Tab label="Tabla">
+                                        <Tab label={<b>Tabla</b>}>
                                             {this.state.isTableLoaded ?
                                                 (<Tabla
                                                     tableData={this.state.tableData} />)

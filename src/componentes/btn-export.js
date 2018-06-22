@@ -9,7 +9,8 @@ class BtnExport extends Component{
         this.state = {
             tableData: props.tableData,
             tableTitle: props.tableTitle,
-            tableSubtitle: props.tableSubtitle
+            tableSubtitle: props.tableSubtitle,
+            usuario: props.usuario
         };
         this.printDocument = this.printDocument.bind(this);
     }
@@ -17,25 +18,23 @@ class BtnExport extends Component{
 
     printDocument() {
         function pie(doc,nombreSistema,version) {
+            doc.setFont("Helvetica", "Oblique");
+            doc.setFontSize(10);
 
-                    doc.setFont("Helvetica", "Oblique");
-                    doc.setFontSize(10);
+            doc.line(10,283,200,283);
+            doc.text(180, 287, "| Page " + doc.internal.getNumberOfPages().toString());
 
-                    doc.line(10,283,200,283);
-                    doc.text(180, 287, "| Page " + doc.internal.getNumberOfPages().toString());
-
-                    doc.setFont("Helvetica", "Oblique");
-                    doc.setFontSize(11);
-                    doc.text(13,287, nombreSistema +" VERSION "+ version);
-                    return 0;
-                }
-        function Format() {
-
+            doc.setFont("Helvetica", "Oblique");
+            doc.setFontSize(11);
+            doc.text(13,287, nombreSistema +" VERSION "+ version);
+            return 0;
+        }
+        function Format(usuario) {
             var doc = new jsPDF();
             var nombreUniversidad = "Universidad Nacional Mayor de San Marcos";
             var nombreFacultad = "Facultad de Ingeniería de Sistemas e Informática";
             var nombreUnidad = "Unidad de Postgrado";
-            var user = "Faker";
+            var user = usuario;
             var nombreSistema = "SIGAP";
             var version = "1.0";
             var marcHora;
@@ -78,11 +77,10 @@ class BtnExport extends Component{
                 return doc;
             }
 
-        var pdf = function (graf, columns, rows, titulo) {
-
+        var pdf = function (graf, columns, rows, titulo, usuario) {
             var nombreSistema = "SIGAP";
             var version = "1.0";
-            var doc=Format();
+            var doc=Format(usuario);
             var Dia = new Array(["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sabado", "Domingo"]);
             var Mes = new Array(["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre",
                     "Octubre", "Noviembre", "Diciembre"]);
@@ -112,7 +110,7 @@ class BtnExport extends Component{
                 },1000);
             }
             else{
-                var docTabla= Format();
+                var docTabla= Format(usuario);
                 var centeredText = function (text, y) {
                     var textWidth = docTabla.getStringUnitWidth(text) * docTabla.internal.getFontSize() / docTabla.internal.scaleFactor;
                     var textOffset = (docTabla.internal.pageSize.width - textWidth) / 2;
@@ -150,8 +148,7 @@ class BtnExport extends Component{
         }
 
         var columns = ["Concepto", "Importe", "Codigo-Alumno", "Alumno", "Fecha"];
-
-        pdf('grafEst', columns, rows, this.state.tableTitle);
+        pdf('grafEst', columns, rows, this.state.tableTitle, this.state.usuario);
     }
 
     render() {

@@ -41,8 +41,8 @@ class App extends Component {
             listaConceptos : "",
             todos : true,
             conceptos : [],
-            todosConceptos : []
-
+            todosConceptos : [],
+            usuario : ''
         };
         this.handleChangeFechaInicio = this.handleChangeFechaInicio.bind(this);
         this.handleChangeFechaFin = this.handleChangeFechaFin.bind(this);
@@ -201,14 +201,21 @@ class App extends Component {
     }
 
     componentDidMount(){
+
+        const search = window.location.search.substring(1);
         var urlChart = 'https://back-estadisticas.herokuapp.com/apiController/importe?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+this.state.listaConceptos;
         var urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaFechas/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+this.state.listaConceptos;
         var urlConceptos = 'https://back-estadisticas.herokuapp.com/apiController/listaConceptos';
 
         this.getConceptsData(encodeURI(urlConceptos));
         this.getChartData(encodeURI(urlChart));
-        this.getTableData(encodeURI(urlTable));
-
+        if(search !== ""){
+            this.setState({
+                usuario: JSON.parse('{"' + search.replace(/&/g, '","').replace(/=/g,'":"') + '"}', function(key, value) { return key===""?value:decodeURIComponent(value) }).nombre
+            }, function(){
+                this.getTableData(encodeURI(urlTable));
+            });
+        }
     }
 
     generarGrafica(listaFinal){
@@ -530,7 +537,7 @@ class App extends Component {
                                         {this.state.isConceptsLoaded === true ? (<button type="submit" onClick={this.generarGrafica.bind(this,listaFinal)} className="btn btn-success btn-block"><b>Generar grafica</b></button>):(<button className="btn btn-success btn-block" disabled ><b>Generar grafica</b></button>)}
                                     </div>
                                     <div className="form-group">
-                                        {this.state.isTableLoaded ? (<BtnExport tableData={this.state.tableData} tableTitle={this.state.titulo} tableSubtitle={this.state.subtitulo}/>) : (<button className="btn btn-warning btn-block" disabled><b>Imprimir</b></button>)}
+                                        {this.state.isTableLoaded ? (<BtnExport tableData={this.state.tableData} tableTitle={this.state.titulo} tableSubtitle={this.state.subtitulo} usuario={this.state.usuario}/>) : (<button className="btn btn-warning btn-block" disabled><b>Imprimir</b></button>)}
                                     </div>
                                 </form>
                             </div>

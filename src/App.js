@@ -15,6 +15,7 @@ class App extends Component {
     constructor(){
         super();
         this.state = {
+            isUsed:false,
             showPopover: false,
             verdades : {},
             chartData : {},
@@ -138,27 +139,59 @@ class App extends Component {
     }
 
     handleChangeMesIni(event) {
-        this.setState({
-            mesini: event.target.value
-        });
+        //console.log("VALOR = " +event.target.value);
+        if(parseInt(event.target.value,0) < parseInt(this.state.mesfin,0)){
+            //console.log("1");
+            this.setState({
+                mesini: event.target.value
+            });
+        }else{
+            //console.log("2");
+            this.setState({
+                mesini: this.state.mesfin
+            });
+        }
     }
 
     handleChangeMesFin(event) {
-        this.setState({
-            mesfin: event.target.value
-        });
+        //console.log("VALOR = " +event.target.value);
+        if(parseInt(event.target.value,0) > parseInt(this.state.mesini,0)){
+            //console.log("3");
+            this.setState({
+                mesfin: event.target.value
+            });
+        }else{
+            //console.log("4");
+            this.setState({
+                mesfin: this.state.mesini
+            });
+        }
     }
 
     handleChangeAnioIni(event) {
-        this.setState({
-            anioini: event.target.value
-        });
+        //console.log(event.target.value);
+        if(parseInt(event.target.value,0) > parseInt(this.state.aniofin,0)){
+            this.setState({
+                anioini: this.state.aniofin
+            });
+        }else{
+            this.setState({
+                anioini: event.target.value
+            });
+        }
     }
 
     handleChangeAnioFin(event) {
-        this.setState({
-            aniofin: event.target.value
-        });
+        //console.log(event.target.value);
+        if(parseInt(event.target.value,0) < parseInt(this.state.anioini,0)){
+            this.setState({
+                aniofin: this.state.anioini
+            });
+        }else{
+            this.setState({
+                aniofin: event.target.value
+            });
+        }
     }
 
     handleChangeOpcion(event) {
@@ -208,7 +241,6 @@ class App extends Component {
         this.getConceptsData(encodeURI(urlConceptos));
         this.getChartData(encodeURI(urlChart));
         this.getTableData(encodeURI(urlTable));
-
     }
 
     generarGrafica(listaFinal){
@@ -216,7 +248,8 @@ class App extends Component {
         var urlChart = '';
         var urlTable = '';
         this.setState({
-            isTableLoaded: false
+            isTableLoaded: false,
+            isUsed: true
         });
         var urlConceptos = 'https://back-estadisticas.herokuapp.com/apiController/listaConceptos';
         if(this.state.opcion === 'fecha'){
@@ -538,7 +571,7 @@ class App extends Component {
                                 <div className="form-group">
                                     <Tabs align="center" onSelect={(index, label) => console.log(label + ' selected')}>
                                         <Tab label="Grafica">
-                                            {this.state.isChartLoaded ?
+                                            {(this.state.isChartLoaded && this.state.isUsed) ?
                                                 (<Chart
                                                     chartData={this.state.chartData}
                                                     grafico={this.state.grafico}
@@ -547,21 +580,33 @@ class App extends Component {
                                                     paleta={this.state.colores}
                                                     grad={this.state.grad}
                                                     prefijo={this.state.prefijo}
-                                                    subtitulo={this.state.subtitulo}/>)
-                                                :(<div className="App-logo"><br></br><br></br><br></br><br></br>
-                                                                            <br></br><br></br><br></br><br></br>
-                                                                            <br></br><br></br><br></br><br></br>
-                                                                            <h2>Cargando grafica . . .</h2></div>)
+                                                    subtitulo={this.state.subtitulo}/>):(null)
+                                            }
+                                            {(!this.state.isChartLoaded && this.state.isUsed)?
+                                                (<div className="App-logo"><br></br><br></br><br></br><br></br>
+                                                                        <br></br><br></br><br></br><br></br>
+                                                                        <br></br><br></br><br></br><br></br>
+                                                                        <h2>Cargando grafica . . .</h2></div>):(null)
+                                            }
+                                            {(!this.state.isChartLoaded && !this.state.isUsed)?
+                                                (null):(null)
                                             }
                                         </Tab>
                                         <Tab label="Tabla">
-                                            {this.state.isTableLoaded ?
+                                            {(this.state.isTableLoaded && this.state.isUsed) ?
                                                 (<Tabla
                                                     tableData={this.state.tableData} />)
-                                                :(<div className="App-logo"><br></br><br></br><br></br><br></br>
+                                                :(null)
+                                            }
+                                            {(!this.state.isTableLoaded && this.state.isUsed)?
+                                                (<div className="App-logo"><br></br><br></br><br></br><br></br>
                                                                             <br></br><br></br><br></br><br></br>
                                                                             <br></br><br></br><br></br><br></br>
-                                                                            <h2>Cargando tabla . . .</h2></div>)}
+                                                                            <h2>Cargando tabla . . .</h2></div>):(null)
+                                            }
+                                            {(!this.state.isTableLoaded && !this.state.isUsed)?
+                                                (null):(null)
+                                            }
                                         </Tab>
                                     </Tabs>
                                 </div>

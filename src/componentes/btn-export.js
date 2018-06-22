@@ -58,7 +58,7 @@ class BtnExport extends Component{
                 marcHora = Hora + ":" + Minutos + ":" + Segundos + " " + dn;
 
                 doc.setFontStyle("normal");
-                doc.setFontSize(15);
+                doc.setFontSize(12);
                 doc.text(13,15,nombreUniversidad);
                 doc.text(13,21,nombreFacultad);
                 doc.text(13,27,nombreUnidad);
@@ -91,35 +91,36 @@ class BtnExport extends Component{
             var Fecha = Dia[Hoy.getDay()] + ", " + Hoy.getDate() + " de " + Mes[Hoy.getMonth()] + " de " + Anio + ". ";
 
             const input = document.getElementById(graf);
-            const emtHeight = input.offsetHeight;
-            const emtWidth = input.offsetWidth;
-            const proporcion = emtHeight/emtWidth;
+            if(input!==null){
+                const emtHeight = input.offsetHeight;
+                const emtWidth = input.offsetWidth;
+                const proporcion = emtHeight/emtWidth;
 
-            html2canvas(input)
-                .then((canvas) => {
-                    var imgData = canvas.toDataURL('image/jpeg');
-                    var width = doc.internal.pageSize.width-20;
-                    var height = width * proporcion;
-                    console.log(imgData);
+                html2canvas(input)
+                    .then((canvas) => {
+                        var imgData = canvas.toDataURL('image/jpeg');
+                        var width = doc.internal.pageSize.width-20;
+                        var height = width * proporcion;
 
-                    doc.addImage(imgData, 'PNG', 10, 50,width,height);
-                })
-            ;
-            doc.text(110,200,"Ciudad Universitaria, "+Fecha);
+                        doc.addImage(imgData, 'PNG', 10, 50,width,height);
+                    })
+                ;
+                doc.text(110,200,"Ciudad Universitaria, "+Fecha);
 
-            setTimeout(function(){
-                doc.output('save', 'ReporteGrafica.pdf');
-            },1000);
-
-            var docTabla= Format();
-            var centeredText = function (text, y) {
-                var textWidth = docTabla.getStringUnitWidth(text) * docTabla.internal.getFontSize() / docTabla.internal.scaleFactor;
-                var textOffset = (docTabla.internal.pageSize.width - textWidth) / 2;
-                docTabla.text(textOffset, y, text);
+                setTimeout(function(){
+                    doc.output('save', 'ReporteGrafica.pdf');
+                },1000);
             }
-            docTabla.setFontStyle("arial","bold");
-            docTabla.setFontSize(12);
-            centeredText(titulo,40);
+            else{
+                var docTabla= Format();
+                var centeredText = function (text, y) {
+                    var textWidth = docTabla.getStringUnitWidth(text) * docTabla.internal.getFontSize() / docTabla.internal.scaleFactor;
+                    var textOffset = (docTabla.internal.pageSize.width - textWidth) / 2;
+                    docTabla.text(textOffset, y, text);
+                }
+                docTabla.setFontStyle("arial","bold");
+                docTabla.setFontSize(12);
+                centeredText(titulo,40);
 
                 docTabla.autoTable(columns, rows, {
                     margin: { top: 45 },
@@ -130,8 +131,7 @@ class BtnExport extends Component{
                 });
 
                 docTabla.output('save', 'ReporteTabla.pdf');//guardar pdf
-
-
+            }
         }
 
         var data = this.state.tableData;

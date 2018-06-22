@@ -69,9 +69,8 @@ class Chart extends Component{
     render(){
         return (
           <div id="grafEst">
-          <ReactFC {...this.state} />
-
-        </div>
+              <ReactFC {...this.state} />
+          </div>
         )
     }
 }

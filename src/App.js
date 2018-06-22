@@ -98,7 +98,6 @@ class App extends Component {
             let verdadesCopy = JSON.parse(JSON.stringify(this.state.verdades));
             verdadesCopy[n].value = !(verdadesCopy[n].value);
             this.cambiarVerdades(verdadesCopy);
-            console.log(this.state.verdades);
         }
     }
 
@@ -112,77 +111,66 @@ class App extends Component {
         this.setState({
             fechaInicio : date.unix()
         });
-        console.log(this.state.fechaInicio);
     }
 
     handleChangeFechaFin(date){
         this.setState({
             fechaFin : date.unix()
         });
-        console.log(this.state.fechaInicio);
     }
 
     handleChangeGrafico(event) {
         this.setState({
             grafico: event.target.value
         });
-        console.log(this.state.grafico);
     }
 
     handleChangeGrad(event) {
         this.setState({
             grad: event.target.value
         });
-        console.log(this.state.grad);
     }
 
     handleChangeAnio(event) {
         this.setState({
             anio: event.target.value
         });
-        console.log(this.state.anio);
     }
 
     handleChangeMesIni(event) {
         this.setState({
             mesini: event.target.value
         });
-        console.log(this.state.mesini);
     }
 
     handleChangeMesFin(event) {
         this.setState({
             mesfin: event.target.value
         });
-        console.log(this.state.mesfin);
     }
 
     handleChangeAnioIni(event) {
         this.setState({
             anioini: event.target.value
         });
-        console.log(this.state.anioini);
     }
 
     handleChangeAnioFin(event) {
         this.setState({
             aniofin: event.target.value
         });
-        console.log(this.state.aniofin);
     }
 
     handleChangeOpcion(event) {
         this.setState({
             opcion: event.target.value
         });
-        console.log(this.state.opcion);
     }
 
     handleChangeColores(event) {
         this.setState({
             colores: event.target.value
         });
-        console.log(this.state.colores);
     }
 
     handleChangeInfoType(event){
@@ -198,22 +186,18 @@ class App extends Component {
         this.setState({
             infoType : event.target.value
         });
-        console.log(this.state.infoType);
-        console.log(this.state.prefijo);
     }
 
     handleChangePrefijo(event){
         this.setState({
             infoType : event.target.value
         });
-        console.log(this.state.prefijo);
     }
 
     handleChangeListaConceptos(event){
         this.setState({
             listaConceptos : event.target.value
         });
-        console.log(this.state.listaConceptos);
     }
 
     componentDidMount(){
@@ -231,7 +215,9 @@ class App extends Component {
         //return event => (
         var urlChart = '';
         var urlTable = '';
-        console.log("listaConceptos : "+ listaFinal);
+        this.setState({
+            isTableLoaded: false
+        });
         var urlConceptos = 'https://back-estadisticas.herokuapp.com/apiController/listaConceptos';
         if(this.state.opcion === 'fecha'){
             urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaFechas/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+listaFinal;
@@ -456,7 +442,7 @@ class App extends Component {
                         <div className="row">
                             <div className="panel col-md-2">
                                 <Tabs align="center" defaultActiveKey={this.state.indextab} onSelect={(index, label) => console.log(label + ' selected')}>
-                                    <Tab label={<b>Datos</b>}>
+                                    <Tab label="Datos">
                                         <div className="example-warper">
                                         <form className="opciones-formulario" onSubmit={this.onClickPreventDefault}>
                                             <div className="form-group">
@@ -529,7 +515,7 @@ class App extends Component {
                                         </form>
                                         </div>
                                     </Tab>
-                                    <Tab label={<b>Grafica</b>}>
+                                    <Tab label="Grafica">
                                         <div className="example-warper">
                                             <form className="opciones-formulario" onSubmit={this.onClickPreventDefault}>
                                                 <SelectGrafica grafico={this.state.grafico} grad={this.state.grad} colores={this.state.colores} cambioGrafico={this.handleChangeGrafico} cambioGrad={this.handleChangeGrad} cambioColores={this.handleChangeColores}/>
@@ -551,7 +537,7 @@ class App extends Component {
                             <div className="tablero col-md-10" id="estadisticas">
                                 <div className="form-group">
                                     <Tabs align="center" onSelect={(index, label) => console.log(label + ' selected')}>
-                                        <Tab label={<b>Grafica</b>}>
+                                        <Tab label="Grafica">
                                             {this.state.isChartLoaded ?
                                                 (<Chart
                                                     chartData={this.state.chartData}
@@ -568,7 +554,7 @@ class App extends Component {
                                                                             <h2>Cargando grafica . . .</h2></div>)
                                             }
                                         </Tab>
-                                        <Tab label={<b>Tabla</b>}>
+                                        <Tab label="Tabla">
                                             {this.state.isTableLoaded ?
                                                 (<Tabla
                                                     tableData={this.state.tableData} />)

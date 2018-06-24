@@ -358,9 +358,15 @@ class App extends Component {
                     titulo: 'REPORTE ESTADISTICO POR NUMERO DE OPERACIONES'
                 });
                 this.getChartData(encodeURI(urlChart));
-                this.setState({
-                    subtitulo : ( ( this.retornarMes(this.state.mesini) + ' A ' + this.retornarMes(this.state.mesfin) + " DEL " + this.state.anio ) /*+"<br/> CONCEPTOS : " + this.state.listaConceptosEncontrados.substring(0, this.state.listaConceptosEncontrados.length - 2)*/)
-                });
+                if(this.state.mesini === this.state.mesfin){
+                    this.setState({
+                        subtitulo : ( ( this.retornarMes(this.state.mesini) + " DEL " + this.state.anio ) /*+"<br/> CONCEPTOS : " + this.state.listaConceptosEncontrados.substring(0, this.state.listaConceptosEncontrados.length - 2)*/)
+                    });
+                }else{
+                    this.setState({
+                        subtitulo : ( ( this.retornarMes(this.state.mesini) + ' A ' + this.retornarMes(this.state.mesfin) + " DEL " + this.state.anio ) /*+"<br/> CONCEPTOS : " + this.state.listaConceptosEncontrados.substring(0, this.state.listaConceptosEncontrados.length - 2)*/)
+                    });
+                }
             }
             else{
                 urlChart = 'https://back-estadisticas.herokuapp.com/apiController/totalPorPeriodoMes/?year='+this.state.anio+'&mes_inicio='+this.state.mesini+'&mes_fin='+this.state.mesfin+'&conceptos='+listaFinal;
@@ -369,9 +375,15 @@ class App extends Component {
                     titulo: 'REPORTE ESTADISTICO POR IMPORTES'
                 });
                 this.getChartData(encodeURI(urlChart));
-                this.setState({
-                    subtitulo : (( this.retornarMes(this.state.mesini) + ' A ' + this.retornarMes(this.state.mesfin) + " DEL " + this.state.anio ) /*+  "<br/> CONCEPTOS : " + this.state.listaConceptosEncontrados.substring(0, this.state.listaConceptosEncontrados.length - 2)*/)
-                });
+                if(this.state.mesini === this.state.mesfin){
+                    this.setState({
+                        subtitulo : ( ( this.retornarMes(this.state.mesini) + " DEL " + this.state.anio ) /*+"<br/> CONCEPTOS : " + this.state.listaConceptosEncontrados.substring(0, this.state.listaConceptosEncontrados.length - 2)*/)
+                    });
+                }else{
+                    this.setState({
+                        subtitulo : ( ( this.retornarMes(this.state.mesini) + ' A ' + this.retornarMes(this.state.mesfin) + " DEL " + this.state.anio ) /*+"<br/> CONCEPTOS : " + this.state.listaConceptosEncontrados.substring(0, this.state.listaConceptosEncontrados.length - 2)*/)
+                    });
+                }
             }
         }else{
             urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaYear/?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin+'&conceptos='+listaFinal;

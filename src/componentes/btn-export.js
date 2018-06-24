@@ -81,9 +81,9 @@ class BtnExport extends Component{
             var nombreSistema = "SIGAP";
             var version = "1.0";
             var doc=Format(usuario);
-            var Dia = new Array("Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sabado");
-            var Mes = new Array("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre",
-                    "Octubre", "Noviembre", "Diciembre");
+            var Dia = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sabado"];
+            var Mes = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre",
+                    "Octubre", "Noviembre", "Diciembre"];
             var Hoy = new Date();
             var Anio = Hoy.getFullYear();
             var Fecha = Dia[Hoy.getDay()] + ", " + Hoy.getDate() + " de " + Mes[Hoy.getMonth()] + " de " + Anio + ". ";
@@ -99,7 +99,6 @@ class BtnExport extends Component{
                         var imgData = canvas.toDataURL('image/jpeg');
                         var width = doc.internal.pageSize.width-20;
                         var height = width * proporcion;
-
                         doc.addImage(imgData, 'PNG', 10, 50,width,height);
                     })
                 ;

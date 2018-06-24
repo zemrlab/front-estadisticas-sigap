@@ -43,7 +43,8 @@ class App extends Component {
             todos : true,
             conceptos : [],
             todosConceptos : [],
-            usuario : ''
+            usuario : '',
+            listaConceptosEncontrados : ""
         };
         this.handleChangeFechaInicio = this.handleChangeFechaInicio.bind(this);
         this.handleChangeFechaFin = this.handleChangeFechaFin.bind(this);
@@ -81,7 +82,7 @@ class App extends Component {
         });
     }
 
-    todosChanged= () => {
+    todosChanged = () => {
         this.setState({
             conceptos : this.state.todosConceptos,
             todos : false
@@ -233,6 +234,47 @@ class App extends Component {
         });
     }
 
+    retornarMes(mes){
+        var cadenames = "";
+        if(mes === "1"){
+            cadenames = "ENERO";
+        }
+        else if(mes === "2"){
+            cadenames = "FEBRERO";
+        }
+        else if(mes === "3"){
+            cadenames = "MARZO";
+        }
+        else if(mes === "4"){
+            cadenames = "ABRIL";
+        }
+        else if(mes === "5"){
+            cadenames = "MAYO";
+        }
+        else if(mes === "6"){
+            cadenames = "JUNIO";
+        }
+        else if(mes === "7"){
+            cadenames = "JULIO";
+        }
+        else if(mes === "8"){
+            cadenames = "AGOSTO";
+        }
+        else if(mes === "9"){
+            cadenames = "SEPTIEMBRE";
+        }
+        else if(mes === "10"){
+            cadenames = "OCTUBRE";
+        }
+        else if(mes === "11"){
+            cadenames = "NOVIEMBRE";
+        }
+        else if(mes === "12"){
+            cadenames = "DICIEMBRE";
+        }
+        return cadenames;
+    }
+
     componentDidMount(){
 
         const search = window.location.search.substring(1);
@@ -251,13 +293,17 @@ class App extends Component {
         }
     }
 
-    generarGrafica(listaFinal){
+    generarGrafica(listaFinal,anioinienc,aniofinenc){
         //return event => (
+        //console.log(this.state.listaConceptosEncontrados);
+        //console.log(this.state.listaConceptosEncontrados.substring(0, this.state.listaConceptosEncontrados.length - 2));
         var urlChart = '';
         var urlTable = '';
         this.setState({
             isTableLoaded: false,
-            isUsed: true
+            isUsed: true,
+            listaConceptosEncontrados : "",
+            subtitulo : ""
         });
         var urlConceptos = 'https://back-estadisticas.herokuapp.com/apiController/listaConceptos';
         if(this.state.opcion === 'fecha'){
@@ -268,17 +314,19 @@ class App extends Component {
                 var ff = new Date(this.state.fechaFin*1000);
                 this.setState({
                     isChartLoaded : false,
-                    titulo: 'REPORTE ESTADISTICO DE NUMERO DE OPERACIONES POR CONCEPTO',
-                    subtitulo : ("DEL "+
+                    titulo: 'REPORTE ESTADISTICO POR NUMERO DE OPERACIONES'
+                });
+                this.getChartData(encodeURI(urlChart));
+                this.setState({
+                    subtitulo : (("DEL "+
                     (fi.getUTCDate()<=9 ? ("0"+fi.getUTCDate()) : (fi.getUTCDate()))
                     +"/"+(fi.getUTCDate()<=8 ? ("0"+(fi.getUTCMonth()+1)) : (fi.getUTCMonth()+1))
                     +"/"+fi.getUTCFullYear()
                     +" AL "+
                     (ff.getUTCDate()<=9 ? ("0"+ff.getUTCDate()) : (ff.getUTCDate()))
                     +"/"+(ff.getUTCDate()<=8 ? ("0"+(ff.getUTCMonth()+1)) : (ff.getUTCMonth()+1))
-                    +"/"+ff.getUTCFullYear())
+                    +"/"+ff.getUTCFullYear()) +  "<br/> CONCEPTOS : " + this.state.listaConceptosEncontrados.substring(0, this.state.listaConceptosEncontrados.length - 2))
                 });
-                this.getChartData(encodeURI(urlChart));
             }
             else{
                 urlChart = 'https://back-estadisticas.herokuapp.com/apiController/importe?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+listaFinal;
@@ -286,17 +334,19 @@ class App extends Component {
                 ff = new Date(this.state.fechaFin*1000);
                 this.setState({
                     isChartLoaded : false,
-                    titulo: 'REPORTE ESTADISTICO DE NUMERO DE IMPORTES POR CONCEPTO',
-                    subtitulo : ("DEL "+
+                    titulo: 'REPORTE ESTADISTICO POR NUMERO DE IMPORTES'
+                });
+                this.getChartData(encodeURI(urlChart));
+                this.setState({
+                    subtitulo : (("DEL "+
                     (fi.getUTCDate()<=9 ? ("0"+fi.getUTCDate()) : (fi.getUTCDate()))
                     +"/"+(fi.getUTCDate()<=8 ? ("0"+(fi.getUTCMonth()+1)) : (fi.getUTCMonth()+1))
                     +"/"+fi.getUTCFullYear()
                     +" AL "+
                     (ff.getUTCDate()<=9 ? ("0"+ff.getUTCDate()) : (ff.getUTCDate()))
                     +"/"+(ff.getUTCDate()<=8 ? ("0"+(ff.getUTCMonth()+1)) : (ff.getUTCMonth()+1))
-                    +"/"+ff.getUTCFullYear())
+                    +"/"+ff.getUTCFullYear()) +  "<br/> CONCEPTOS : " + this.state.listaConceptosEncontrados.substring(0, this.state.listaConceptosEncontrados.length - 2))
                 });
-                this.getChartData(encodeURI(urlChart));
             }
         }
         else if(this.state.opcion === 'months'){
@@ -305,19 +355,23 @@ class App extends Component {
                 urlChart = 'https://back-estadisticas.herokuapp.com/apiController/cantidadPorPeriodoMes?year='+this.state.anio+'&mes_inicio='+this.state.mesini+'&mes_fin='+this.state.mesfin+'&conceptos='+listaFinal;
                 this.setState({
                     isChartLoaded : false,
-                    titulo: 'REPORTE ESTADISTICO DE NUMERO DE OPERACIONES POR CONCEPTO',
-                    subtitulo : ("AÑO " + this.state.anio + " | DE " + this.state.mesini+' A '+this.state.mesfin)
+                    titulo: 'REPORTE ESTADISTICO POR NUMERO DE OPERACIONES'
                 });
                 this.getChartData(encodeURI(urlChart));
+                this.setState({
+                    subtitulo : ( ( this.retornarMes(this.state.mesini) + ' A ' + this.retornarMes(this.state.mesfin) + " DEL " + this.state.anio ) /*+"<br/> CONCEPTOS : " + this.state.listaConceptosEncontrados.substring(0, this.state.listaConceptosEncontrados.length - 2)*/)
+                });
             }
             else{
                 urlChart = 'https://back-estadisticas.herokuapp.com/apiController/totalPorPeriodoMes/?year='+this.state.anio+'&mes_inicio='+this.state.mesini+'&mes_fin='+this.state.mesfin+'&conceptos='+listaFinal;
                 this.setState({
                     isChartLoaded : false,
-                    titulo: 'REPORTE ESTADISTICO DE IMPORTES POR CONCEPTO',
-                    subtitulo : ("AÑO " + this.state.anio + " | DE " + this.state.mesini+' A '+this.state.mesfin)
+                    titulo: 'REPORTE ESTADISTICO POR IMPORTES'
                 });
                 this.getChartData(encodeURI(urlChart));
+                this.setState({
+                    subtitulo : (( this.retornarMes(this.state.mesini) + ' A ' + this.retornarMes(this.state.mesfin) + " DEL " + this.state.anio ) /*+  "<br/> CONCEPTOS : " + this.state.listaConceptosEncontrados.substring(0, this.state.listaConceptosEncontrados.length - 2)*/)
+                });
             }
         }else{
             urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaYear/?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin+'&conceptos='+listaFinal;
@@ -325,19 +379,41 @@ class App extends Component {
                 urlChart = 'https://back-estadisticas.herokuapp.com/apiController/cantidadPorPeriodoAnio?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin+'&conceptos='+listaFinal;
                 this.setState({
                     isChartLoaded : false,
-                    titulo: 'REPORTE ESTADISTICO DE NUMERO DE OPERACIONES POR CONCEPTO',
-                    subtitulo : ("DEL AÑO " + this.state.anioini + " AL " + this.state.aniofin)
+                    titulo: 'REPORTE ESTADISTICO POR NUMERO DE OPERACIONES'
                 });
                 this.getChartData(encodeURI(urlChart));
+                if(this.state.anioini === this.state.aniofin){
+                    this.setState({
+                        subtitulo : (("EN EL AÑO " + this.state.anioini) /*+  "<br/> CONCEPTOS : " + this.state.listaConceptosEncontrados.substring(0, this.state.listaConceptosEncontrados.length - 2)*/)
+                    });
+                }else{
+                    this.setState({
+                        subtitulo : (("DEL AÑO " +
+                        this.state.anioini
+                        + " AL " +
+                        this.state.aniofin ) /*+  "<br/> CONCEPTOS : " + this.state.listaConceptosEncontrados.substring(0, this.state.listaConceptosEncontrados.length - 2)*/)
+                    });
+                }
             }
             else{
                 urlChart = 'https://back-estadisticas.herokuapp.com/apiController/montoPorPeriodoAnio/?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin+'&conceptos='+listaFinal;
                 this.setState({
                     isChartLoaded : false,
-                    titulo: 'REPORTE ESTADISTICO DE IMPORTES POR CONCEPTO',
-                    subtitulo : ("DEL AÑO " + this.state.anioini + " AL " + this.state.aniofin)
+                    titulo: 'REPORTE ESTADISTICO POR IMPORTES'
                 });
                 this.getChartData(encodeURI(urlChart));
+                if(this.state.anioini === this.state.aniofin){
+                    this.setState({
+                        subtitulo : (("EN EL AÑO " + this.state.anioini) /*+  "<br/> CONCEPTOS : " + this.state.listaConceptosEncontrados.substring(0, this.state.listaConceptosEncontrados.length - 2)*/)
+                    });
+                }else{
+                    this.setState({
+                        subtitulo : (("DEL AÑO " +
+                        this.state.anioini
+                        + " AL " +
+                        this.state.aniofin ) /*+  "<br/> CONCEPTOS : " + this.state.listaConceptosEncontrados.substring(0, this.state.listaConceptosEncontrados.length - 2)*/)
+                    });
+                }
             }
         }
         this.getTableData(encodeURI(urlTable));
@@ -356,6 +432,9 @@ class App extends Component {
 
             for(var i in result.labels)
             {
+                this.setState({
+                    listaConceptosEncontrados : (this.state.listaConceptosEncontrados + result['labels'][i]+", ")
+                })
               chartData1.push({
                 label: result['labels'][i],
                 value: result['datasets'][0]['data'][i]
@@ -473,6 +552,7 @@ class App extends Component {
 
         const op = this.state.opcion;
         const listaFinal = this.revisarConceptos();
+        //console.log(this.state.listaConceptosEncontrados);
         return (
             <div style={{
                 position: 'relative'
@@ -594,7 +674,7 @@ class App extends Component {
                                                 (<div className="App-logo"><br></br><br></br><br></br><br></br>
                                                                         <br></br><br></br><br></br><br></br>
                                                                         <br></br><br></br><br></br><br></br>
-                                                                        <h2>Cargando grafica . . .</h2></div>):(null)
+                                                                        <h4>Cargando grafica . . .</h4></div>):(null)
                                             }
                                             {(!this.state.isChartLoaded && !this.state.isUsed)?
                                                 (null):(null)
@@ -610,7 +690,7 @@ class App extends Component {
                                                 (<div className="App-logo"><br></br><br></br><br></br><br></br>
                                                                             <br></br><br></br><br></br><br></br>
                                                                             <br></br><br></br><br></br><br></br>
-                                                                            <h2>Cargando tabla . . .</h2></div>):(null)
+                                                                            <h4>Cargando tabla . . .</h4></div>):(null)
                                             }
                                             {(!this.state.isTableLoaded && !this.state.isUsed)?
                                                 (null):(null)

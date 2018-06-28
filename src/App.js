@@ -110,15 +110,31 @@ class App extends Component {
     }
 
     handleChangeFechaInicio(date){
-        this.setState({
-            fechaInicio : date.unix()
-        });
+        if(parseInt(date.unix(),0) > parseInt(this.state.fechaFin,0)){
+            //console.log("1");
+            this.setState({
+                fechaInicio : this.state.fechaFin
+            });
+        }else{
+            //console.log("2");
+            this.setState({
+                fechaInicio : date.unix()
+            });
+        }
     }
 
     handleChangeFechaFin(date){
-        this.setState({
-            fechaFin : date.unix()
-        });
+        if(parseInt(date.unix(),0) < parseInt(this.state.fechaInicio,0)){
+            //console.log("1");
+            this.setState({
+                fechaFin : this.state.fechaInicio
+            });
+        }else{
+            //console.log("2");
+            this.setState({
+                fechaFin : date.unix()
+            });
+        }
     }
 
     handleChangeGrafico(event) {

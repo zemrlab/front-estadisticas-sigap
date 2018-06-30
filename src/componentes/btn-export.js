@@ -3,7 +3,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 class BtnExport extends Component{
-
+    
     constructor(props){
         super(props);
         this.state = {

@@ -1,3 +1,4 @@
+//imports de los componentes que se emplean en el modulo estadistico
 import React, { Component } from 'react';
 import './App.css';
 import Chart from './componentes/chart.js'
@@ -12,40 +13,41 @@ import SelectMonth from "./componentes/selectMonth";
 
 class App extends Component {
 
-    constructor(){
+    constructor(){//constructor inicial
         super();
         this.state = {
-            isUsed:false,
-            showPopover: false,
-            verdades : {},
-            chartData : {},
-            isChartLoaded: false,
-            tableData: {},
-            isTableLoaded: false,
-            conceptsData: {},
-            isConceptsLoaded: false,
-            infoType : "importes",
-            titulo: 'REPORTE ESTADISTICO DE IMPORTES POR CONCEPTO',
-            subtitulo: 'DEL 03/01/2015 AL 06/01/2015',
-            fechaInicio: '1420243200',
-            fechaFin: '1420502400',
-            grafico : 'column2d',
-            anioini : '2015',
-            aniofin : '2015',
-            anio: '2015',
-            mesini : '1',
-            mesfin : '12',
-            opcion : 'fecha',
-            colores : "",
-            grad : "0",
-            prefijo : "S/",
-            listaConceptos : "",
-            todos : true,
-            conceptos : [],
-            todosConceptos : [],
-            usuario : '',
-            listaConceptosEncontrados : ""
+            isUsed:false, //usado para saber si las aplicacion es usada
+            showPopover: false, //usado para mostrar o no el popup
+            verdades : {}, //usado para  ver que conceptos estan sieno usados
+            chartData : {}, //usado para dar datos al FusionChart (cuadro)
+            isChartLoaded: false, //usado para mostrat el FusionChart
+            tableData: {}, //usado para dar datos a la tabla
+            isTableLoaded: false, //usado para mostrar la tabla
+            conceptsData: {}, //usado para guardar los conceptos de la BD
+            isConceptsLoaded: false, //usado para saber si ya obtuvimos los conceptos de la BD
+            infoType : "importes", //usado para saber el tipo de informacion mostrada
+            titulo: 'REPORTE ESTADISTICO DE IMPORTES POR CONCEPTO', //usado para el titulo del cuadro
+            subtitulo: 'DEL 03/01/2015 AL 06/01/2015', //usado para el subtitulo del cuadro
+            fechaInicio: '1420243200', //usado para la fecha inicial del cuadro
+            fechaFin: '1420502400', //usado para la fecha final del cuadro
+            grafico : 'column2d', //usado para el tipo de grafico del cuadro
+            anioini : '2015', //usado para el año inicial del cuadro
+            aniofin : '2015', //usado para el año final del cuadro
+            anio: '2015', //usado para el año a biscar con el intervalo del mes
+            mesini : '1', //usado para el mes inicial del cuadro
+            mesfin : '12', //usado para el mes final del cuadro/grafico
+            opcion : 'fecha', //usado para la opcion del filtro
+            colores : "", //usado para el tipo de color del cuadro/grafico
+            grad : "0", //usado para el gradiente del cuadro
+            prefijo : "S/", //usado para el prefijo del cuadro
+            listaConceptos : "", //usado para guardar una lista de los conceptos del cuadro
+            todos : true, //usado para marcar todos los checkbox
+            conceptos : [], //usado para saber que checkboxes son marcados
+            todosConceptos : [], //usado para saber todos los conceptos que hay en la BD en otro tipo formato de dato
+            usuario : '', //usado para la sesion del usuario
+            listaConceptosEncontrados : "" //usado para saber que conceptos se encontraron en la consulta
         };
+        //TODOS SON LOS BIND DE LAS FUNCIONES DE CHANGE...
         this.handleChangeFechaInicio = this.handleChangeFechaInicio.bind(this);
         this.handleChangeFechaFin = this.handleChangeFechaFin.bind(this);
         this.handleChangeGrafico = this.handleChangeGrafico.bind(this);
@@ -69,33 +71,33 @@ class App extends Component {
         this.todosChanged = this.todosChanged.bind(this);
     }
 
-    conceptosChanged = (newConceptos) => {
+    conceptosChanged = (newConceptos) => { // actualiza el atributo de la funcion
         this.setState({
             conceptos: newConceptos
         });
     }
 
-    ningunoChanged = () => {
+    ningunoChanged = () => { // cambiar todos los checkboxes a desmarcados
         this.setState({
             conceptos: [],
             todos : true
         });
     }
 
-    todosChanged = () => {
+    todosChanged = () => { //marcar todos los checkboxes
         this.setState({
             conceptos : this.state.todosConceptos,
             todos : false
         });
     }
 
-    cambiarVerdades(vs){
+    cambiarVerdades(vs){ // cambiar verdades usada dentro del updateVerdades
         this.setState({
             verdades: vs
         });
     }
 
-    updateVerdades(n) {
+    updateVerdades(n) { // cambiar verdades
         return event =>{
             let verdadesCopy = JSON.parse(JSON.stringify(this.state.verdades));
             verdadesCopy[n].value = !(verdadesCopy[n].value);
@@ -109,7 +111,7 @@ class App extends Component {
         });
     }
 
-    handleChangeFechaInicio(date){
+    handleChangeFechaInicio(date){  //cambiar fecha inicio solo si no es mayor que fecha final
         if(parseInt(date.unix(),0) > parseInt(this.state.fechaFin,0)){
             //console.log("1");
             this.setState({
@@ -123,7 +125,7 @@ class App extends Component {
         }
     }
 
-    handleChangeFechaFin(date){
+    handleChangeFechaFin(date){//cambiar fecha final solo si no es menor que fecha inicial
         if(parseInt(date.unix(),0) < parseInt(this.state.fechaInicio,0)){
             //console.log("1");
             this.setState({
@@ -137,25 +139,25 @@ class App extends Component {
         }
     }
 
-    handleChangeGrafico(event) {
+    handleChangeGrafico(event) { // cambiar grafico
         this.setState({
             grafico: event.target.value
         });
     }
 
-    handleChangeGrad(event) {
+    handleChangeGrad(event) { // cambiar gradiente
         this.setState({
             grad: event.target.value
         });
     }
 
-    handleChangeAnio(event) {
+    handleChangeAnio(event) {  // cambiar año para los meses inicial y final
         this.setState({
             anio: event.target.value
         });
     }
 
-    handleChangeMesIni(event) {
+    handleChangeMesIni(event) { // cambiar mes inicial si es uqe no es mayor a mes final
         //console.log("VALOR = " +event.target.value);
         if(parseInt(event.target.value,0) < parseInt(this.state.mesfin,0)){
             //console.log("1");
@@ -170,7 +172,7 @@ class App extends Component {
         }
     }
 
-    handleChangeMesFin(event) {
+    handleChangeMesFin(event) { // cambiar mes final si este no es menor a mes inicial
         //console.log("VALOR = " +event.target.value);
         if(parseInt(event.target.value,0) > parseInt(this.state.mesini,0)){
             //console.log("3");
@@ -185,7 +187,7 @@ class App extends Component {
         }
     }
 
-    handleChangeAnioIni(event) {
+    handleChangeAnioIni(event) { // cambiar año inicial solo si no es mayor a año final
         //console.log(event.target.value);
         if(parseInt(event.target.value,0) > parseInt(this.state.aniofin,0)){
             this.setState({
@@ -198,7 +200,7 @@ class App extends Component {
         }
     }
 
-    handleChangeAnioFin(event) {
+    handleChangeAnioFin(event) {  // cambiar año final solo si este no es menor a año inicial
         //console.log(event.target.value);
         if(parseInt(event.target.value,0) < parseInt(this.state.anioini,0)){
             this.setState({
@@ -211,19 +213,19 @@ class App extends Component {
         }
     }
 
-    handleChangeOpcion(event) {
+    handleChangeOpcion(event) { // cambiar opcion
         this.setState({
             opcion: event.target.value
         });
     }
 
-    handleChangeColores(event) {
+    handleChangeColores(event) { // cambiar colores
         this.setState({
             colores: event.target.value
         });
     }
 
-    handleChangeInfoType(event){
+    handleChangeInfoType(event){ // cambiar tipo de informacion : importes o operaciones
         if(this.state.infoType === "operaciones"){
             this.setState({
                 prefijo : "S/"
@@ -238,19 +240,19 @@ class App extends Component {
         });
     }
 
-    handleChangePrefijo(event){
+    handleChangePrefijo(event){ // cambiar prefijo : "S/." o ""
         this.setState({
             infoType : event.target.value
         });
     }
 
-    handleChangeListaConceptos(event){
+    handleChangeListaConceptos(event){ // cambiar listaConceptos
         this.setState({
             listaConceptos : event.target.value
         });
     }
 
-    retornarMes(mes){
+    retornarMes(mes){ // retorna el mes escogido sea inicial o final usado para el subtitulo de numero -> a nombre del mes
         var cadenames = "";
         if(mes === "1"){
             cadenames = "ENERO";
@@ -291,7 +293,7 @@ class App extends Component {
         return cadenames;
     }
 
-    componentDidMount(){
+    componentDidMount(){ // usado en react para montar todo antes del render
 
         const search = window.location.search.substring(1);
         var urlChart = 'https://back-estadisticas.herokuapp.com/apiController/importe?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+this.state.listaConceptos;
@@ -309,7 +311,7 @@ class App extends Component {
         }
     }
 
-    generarGrafica(listaFinal,anioinienc,aniofinenc){
+    generarGrafica(listaFinal,anioinienc,aniofinenc){ // cambiar genera la grafica segun 1.Opcion 2.colores 3.tipo de grafica 4.filtros variados de datos (conceptos, fechas, meses , etc)
         //return event => (
         //console.log(this.state.listaConceptosEncontrados);
         //console.log(this.state.listaConceptosEncontrados.substring(0, this.state.listaConceptosEncontrados.length - 2));
@@ -448,7 +450,7 @@ class App extends Component {
         this.getConceptsData(encodeURI(urlConceptos));//);
     }
 
-    getChartData(urlChart){
+    getChartData(urlChart){ // obtiene la data del chartData haciendo fetch al URL que se mande (donde se contiene la funcion a usarse)
         fetch(urlChart)
         .then((response)=>{
             return response.json();
@@ -476,22 +478,7 @@ class App extends Component {
         })
     }
 
-    /*crearInputsCheckers(){
-        const objs = [];
-        console.log(this.state.conceptsData);
-        console.log(this.state.verdades);
-        for(var i in this.state.conceptsData){
-            objs.push(
-                <div key={i}>
-                    <label>{this.state.conceptsData[i]["label"]}</label>
-                    <input type="checkbox" onChange={this.updateVerdades(i)} defaultChecked={this.state.verdades[i].value}/>
-                </div>
-            )
-        }
-        return objs;
-    }*/
-
-    revisarConceptos(){
+    revisarConceptos(){ // genera los conceptos escogidos en los checkboxes en un String
         var lista = "";
         for(var i in this.state.conceptos){
             lista = lista + this.state.conceptos[i] + "|";
@@ -502,7 +489,7 @@ class App extends Component {
     }
 
 
-    getConceptsData(urlConcepts){
+    getConceptsData(urlConcepts){ // obtiene los conceptos de la misma forma que el chartData ahora para los conceptsData. pone isConceptsLoaded->true renderizando el componente otra vez
         fetch(urlConcepts)
         .then((response)=>{
             return response.json();
@@ -529,7 +516,7 @@ class App extends Component {
         })
     }
 
-    getTableData(urlTable) {
+    getTableData(urlTable) {// obtiene los datos para la tabla de la misma forma que el chartData ahora para los tableData. pone isTableLoaded->true renderizando el componente otra vez
         fetch(urlTable)
             .then((response) => {
                 return response.json();
@@ -547,7 +534,7 @@ class App extends Component {
     }
 
 
-    submitDatesFunction(){
+    submitDatesFunction(){ //
         var fi = new Date(this.state.fechaInicio*1000);
         var ff = new Date(this.state.fechaFin*1000);
         this.setState({
@@ -576,7 +563,7 @@ class App extends Component {
         this.getTableData('https://back-estadisticas.herokuapp.com/ApiController/tablaYear/?year='+this.state.anio);
     }
 
-    render() {
+    render() { // render  del modulo estadistico
 
         const op = this.state.opcion;
         const listaFinal = this.revisarConceptos();

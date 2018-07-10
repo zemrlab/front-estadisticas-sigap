@@ -296,9 +296,9 @@ class App extends Component {
     componentDidMount(){ // usado en react para montar todo antes del render
 
         const search = window.location.search.substring(1);
-        var urlChart = 'https://back-estadisticas.herokuapp.com/apiController/importe?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+this.state.listaConceptos;
-        var urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaFechas/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+this.state.listaConceptos;
-        var urlConceptos = 'https://back-estadisticas.herokuapp.com/apiController/listaConceptos';
+        var urlChart = 'https://sigap-estadisticas.herokuapp.com/apiController/importe?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+this.state.listaConceptos;
+        var urlTable = 'https://sigap-estadisticas.herokuapp.com/ApiController/tablaFechas/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+this.state.listaConceptos;
+        var urlConceptos = 'https://sigap-estadisticas.herokuapp.com/apiController/listaConceptos';
 
         this.getConceptsData(encodeURI(urlConceptos));
         this.getChartData(encodeURI(urlChart));
@@ -323,11 +323,11 @@ class App extends Component {
             listaConceptosEncontrados : "",
             subtitulo : ""
         });
-        var urlConceptos = 'https://back-estadisticas.herokuapp.com/apiController/listaConceptos';
+        var urlConceptos = 'https://sigap-estadisticas.herokuapp.com/apiController/listaConceptos';
         if(this.state.opcion === 'fecha'){
-            urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaFechas/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+listaFinal;
+            urlTable = 'https://sigap-estadisticas.herokuapp.com/ApiController/tablaFechas/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+listaFinal;
             if(this.state.infoType === "operaciones"){
-                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+listaFinal;
+                urlChart = 'https://sigap-estadisticas.herokuapp.com/apiController/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+listaFinal;
                 var fi = new Date(this.state.fechaInicio*1000);
                 var ff = new Date(this.state.fechaFin*1000);
                 this.setState({
@@ -347,7 +347,7 @@ class App extends Component {
                 });
             }
             else{
-                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/importe?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+listaFinal;
+                urlChart = 'https://sigap-estadisticas.herokuapp.com/apiController/importe?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin+'&conceptos='+listaFinal;
                 fi = new Date(this.state.fechaInicio*1000);
                 ff = new Date(this.state.fechaFin*1000);
                 this.setState({
@@ -368,9 +368,9 @@ class App extends Component {
             }
         }
         else if(this.state.opcion === 'months'){
-            urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaMonth/?year='+this.state.anio+'&mes_inicio='+this.state.mesini+'&mes_fin='+this.state.mesfin+'&conceptos='+listaFinal;
+            urlTable = 'https://sigap-estadisticas.herokuapp.com/ApiController/tablaMonth/?year='+this.state.anio+'&mes_inicio='+this.state.mesini+'&mes_fin='+this.state.mesfin+'&conceptos='+listaFinal;
             if(this.state.infoType === "operaciones"){
-                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/cantidadPorPeriodoMes?year='+this.state.anio+'&mes_inicio='+this.state.mesini+'&mes_fin='+this.state.mesfin+'&conceptos='+listaFinal;
+                urlChart = 'https://sigap-estadisticas.herokuapp.com/apiController/cantidadPorPeriodoMes?year='+this.state.anio+'&mes_inicio='+this.state.mesini+'&mes_fin='+this.state.mesfin+'&conceptos='+listaFinal;
                 this.setState({
                     isChartLoaded : false,
                     titulo: 'REPORTE ESTADISTICO POR NUMERO DE OPERACIONES'
@@ -387,7 +387,7 @@ class App extends Component {
                 }
             }
             else{
-                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/totalPorPeriodoMes/?year='+this.state.anio+'&mes_inicio='+this.state.mesini+'&mes_fin='+this.state.mesfin+'&conceptos='+listaFinal;
+                urlChart = 'https://sigap-estadisticas.herokuapp.com/apiController/totalPorPeriodoMes/?year='+this.state.anio+'&mes_inicio='+this.state.mesini+'&mes_fin='+this.state.mesfin+'&conceptos='+listaFinal;
                 this.setState({
                     isChartLoaded : false,
                     titulo: 'REPORTE ESTADISTICO POR IMPORTES'
@@ -404,9 +404,9 @@ class App extends Component {
                 }
             }
         }else{
-            urlTable = 'https://back-estadisticas.herokuapp.com/ApiController/tablaYear/?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin+'&conceptos='+listaFinal;
+            urlTable = 'https://sigap-estadisticas.herokuapp.com/ApiController/tablaYear/?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin+'&conceptos='+listaFinal;
             if(this.state.infoType === "operaciones"){
-                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/cantidadPorPeriodoAnio?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin+'&conceptos='+listaFinal;
+                urlChart = 'https://sigap-estadisticas.herokuapp.com/apiController/cantidadPorPeriodoAnio?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin+'&conceptos='+listaFinal;
                 this.setState({
                     isChartLoaded : false,
                     titulo: 'REPORTE ESTADISTICO POR NUMERO DE OPERACIONES'
@@ -426,7 +426,7 @@ class App extends Component {
                 }
             }
             else{
-                urlChart = 'https://back-estadisticas.herokuapp.com/apiController/montoPorPeriodoAnio/?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin+'&conceptos='+listaFinal;
+                urlChart = 'https://sigap-estadisticas.herokuapp.com/apiController/montoPorPeriodoAnio/?year_inicio='+this.state.anioini+'&year_fin='+this.state.aniofin+'&conceptos='+listaFinal;
                 this.setState({
                     isChartLoaded : false,
                     titulo: 'REPORTE ESTADISTICO POR IMPORTES'
@@ -549,8 +549,8 @@ class App extends Component {
             +"/"+(ff.getUTCDate()<=8 ? ("0"+(ff.getUTCMonth()+1)) : (ff.getUTCMonth()+1))
             +"/"+ff.getUTCFullYear())
         });
-        this.getChartData('https://back-estadisticas.herokuapp.com/apiController/importe/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin);
-        this.getTableData('https://back-estadisticas.herokuapp.com/ApiController/tablaFechas/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin);
+        this.getChartData('https://sigap-estadisticas.herokuapp.com/apiController/importe/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin);
+        this.getTableData('https://sigap-estadisticas.herokuapp.com/ApiController/tablaFechas/?inicio='+this.state.fechaInicio+'&fin='+this.state.fechaFin);
     }
 
     submitYearFunction(){
@@ -559,8 +559,8 @@ class App extends Component {
             isTableLoaded : false,
             titulo : ("IMPORTES DE LOS MESES DEL AÑO " + this.state.anio)
         });
-        this.getChartData('https://back-estadisticas.herokuapp.com/apiController/devolverAnioImporte/?year='+this.state.anio);
-        this.getTableData('https://back-estadisticas.herokuapp.com/ApiController/tablaYear/?year='+this.state.anio);
+        this.getChartData('https://sigap-estadisticas.herokuapp.com/apiController/devolverAnioImporte/?year='+this.state.anio);
+        this.getTableData('https://sigap-estadisticas.herokuapp.com/ApiController/tablaYear/?year='+this.state.anio);
     }
 
     render() { // render  del modulo estadistico
